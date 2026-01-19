@@ -91,15 +91,9 @@ const DemoCard: React.FC<DemoCardProps> = ({ demo, onClick, index = 0 }) => {
           <TypeIcon size={14} />
           <span>{typeInfo.type}</span>
         </div>
-        <Badge
-          variant={
-            demo.status === "implemented"
-              ? "status-implemented"
-              : "status-planned"
-          }
-        >
-          {demo.status === "implemented" ? "Ready" : "Planned"}
-        </Badge>
+        {demo.status === "planned" && (
+          <Badge variant="status-planned">Planned</Badge>
+        )}
       </header>
 
       <div className="demo-card-body">
@@ -122,20 +116,6 @@ const DemoCard: React.FC<DemoCardProps> = ({ demo, onClick, index = 0 }) => {
             </span>
           </div>
         )}
-
-        <div className="demo-card-connectors">
-          {demo.connectors.length > 0 ? (
-            demo.connectors.map((connector) => (
-              <span key={connector} className="demo-card-connector">
-                {connector}
-              </span>
-            ))
-          ) : (
-            <span className="demo-card-connector demo-card-connector-none">
-              No external deps
-            </span>
-          )}
-        </div>
 
         <footer className="demo-card-footer">
           <span className="demo-card-cta">

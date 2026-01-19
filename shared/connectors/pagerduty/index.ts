@@ -1,5 +1,5 @@
-export {
-  createPagerDutyConnector,
+export { createPagerDutyConnector } from "./client.js";
+export type {
   PagerDutyConnector,
   PagerDutyConnectorConfig,
   PagerDutyIncident,

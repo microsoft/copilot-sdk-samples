@@ -1,12 +1,52 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   createPagerDutyConnector,
-  PagerDutyConnector,
+  type PagerDutyConnector,
+  type PagerDutyIncident,
+  type PagerDutyService,
+  type IncidentStatus,
+  type IncidentUrgency,
+  type IncidentSeverity,
 } from "../../shared/connectors/pagerduty/index.js";
 import { ErrorCodes } from "../../shared/connectors/types.js";
 import { expectSuccess, expectFailure } from "../helpers/index.js";
 
 describe("shared/connectors/pagerduty", () => {
+  describe("module exports", () => {
+    it("should export createPagerDutyConnector factory function", () => {
+      expect(typeof createPagerDutyConnector).toBe("function");
+    });
+
+    it("should export IncidentStatus/IncidentUrgency/IncidentSeverity types usable for annotations", () => {
+      const status: IncidentStatus = "triggered";
+      const urgency: IncidentUrgency = "high";
+      const severity: IncidentSeverity = "critical";
+
+      expect(status).toBe("triggered");
+      expect(urgency).toBe("high");
+      expect(severity).toBe("critical");
+    });
+
+    it("should export PagerDutyIncident interface usable for type annotations", async () => {
+      const connector = createPagerDutyConnector({ mode: "mock" });
+      await connector.initialize();
+
+      const result = await connector.listIncidents();
+      expectSuccess(result);
+
+      const incidents: PagerDutyIncident[] = result.data?.incidents ?? [];
+      expect(Array.isArray(incidents)).toBe(true);
+
+      if (incidents.length > 0) {
+        const incident: PagerDutyIncident = incidents[0];
+        expect(incident.id).toBeTruthy();
+        expect(incident.status).toBeTruthy();
+      }
+
+      await connector.dispose();
+    });
+  });
+
   describe("MockPagerDutyConnector", () => {
     let connector: PagerDutyConnector;
 

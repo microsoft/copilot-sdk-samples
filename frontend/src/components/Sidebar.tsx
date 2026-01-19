@@ -9,6 +9,7 @@ import {
   Download,
   PlayCircle,
   GitBranch,
+  AlertCircle,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -122,6 +123,28 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
             <span>Git</span>
           </li>
         </ul>
+
+        <div className="sidebar-prereq-section">
+          <div className="sidebar-prereq-header">
+            <AlertCircle size={14} className="sidebar-prereq-header-icon" />
+            <span>Required for Live API</span>
+          </div>
+          <div className="sidebar-prereq-card">
+            <p className="sidebar-prereq-card-text">
+              Install GitHub Copilot CLI to run samples with real data.
+            </p>
+            <a
+              href="https://github.com/github/copilot-cli?tab=readme-ov-file#installation"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sidebar-prereq-card-link"
+            >
+              <Terminal size={14} />
+              <span>Install Copilot CLI</span>
+              <ExternalLink size={12} />
+            </a>
+          </div>
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection

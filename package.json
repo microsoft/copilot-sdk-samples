@@ -20,7 +20,7 @@
     "slack": "tsx samples/slack/sdk/index.ts",
     "teams": "tsx samples/teams/sdk/index.ts",
     "server": "tsx server/index.ts",
-    "dev": "concurrently \"pnpm server\" \"pnpm frontend\"",
+    "dev": "concurrently \"tsx watch server/index.ts\" \"pnpm frontend\"",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",

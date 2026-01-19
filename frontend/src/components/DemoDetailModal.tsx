@@ -34,14 +34,20 @@ interface TokenField {
   placeholder: string;
 }
 
+// All demos require GITHUB_TOKEN for Copilot SDK API access
+const GITHUB_TOKEN_FIELD: TokenField = {
+  key: "GITHUB_TOKEN",
+  label: "GitHub Personal Access Token",
+  placeholder: "ghp_...",
+};
+
 const TOKEN_FIELDS: Record<string, TokenField[]> = {
-  "issue-triage": [
-    { key: "GITHUB_TOKEN", label: "GitHub Token", placeholder: "ghp_..." },
-  ],
-  "security-alerts": [
-    { key: "GITHUB_TOKEN", label: "GitHub Token", placeholder: "ghp_..." },
-  ],
+  "hello-world": [GITHUB_TOKEN_FIELD],
+  "issue-triage": [GITHUB_TOKEN_FIELD],
+  "security-alerts": [GITHUB_TOKEN_FIELD],
+  "mcp-orchestration": [GITHUB_TOKEN_FIELD],
   "jira-confluence": [
+    GITHUB_TOKEN_FIELD,
     {
       key: "JIRA_HOST",
       label: "Jira Host",
@@ -59,10 +65,51 @@ const TOKEN_FIELDS: Record<string, TokenField[]> = {
     },
   ],
   pagerduty: [
+    GITHUB_TOKEN_FIELD,
     {
       key: "PAGERDUTY_API_KEY",
       label: "PagerDuty API Key",
       placeholder: "your-api-key",
+    },
+  ],
+  datadog: [
+    GITHUB_TOKEN_FIELD,
+    {
+      key: "DATADOG_API_KEY",
+      label: "Datadog API Key",
+      placeholder: "your-api-key",
+    },
+    {
+      key: "DATADOG_APP_KEY",
+      label: "Datadog App Key",
+      placeholder: "your-app-key",
+    },
+  ],
+  snyk: [
+    GITHUB_TOKEN_FIELD,
+    {
+      key: "SNYK_TOKEN",
+      label: "Snyk API Token",
+      placeholder: "your-snyk-token",
+    },
+  ],
+  slack: [GITHUB_TOKEN_FIELD],
+  teams: [
+    GITHUB_TOKEN_FIELD,
+    {
+      key: "TEAMS_TENANT_ID",
+      label: "Azure Tenant ID",
+      placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    },
+    {
+      key: "TEAMS_CLIENT_ID",
+      label: "Azure Client ID",
+      placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    },
+    {
+      key: "TEAMS_CLIENT_SECRET",
+      label: "Azure Client Secret",
+      placeholder: "your-client-secret",
     },
   ],
 };
@@ -345,6 +392,41 @@ const getMockOutput = (demoId: string): string[] => {
         "--- Completed: Snyk ---",
       ];
 
+    case "teams":
+      return [
+        "--- Running: Microsoft Teams ---",
+        "Description: Microsoft Teams collaboration integration",
+        "",
+        "=== Teams Channel Discovery ===",
+        "",
+        "Connecting to Microsoft Graph API...",
+        "Authenticated as: demo@contoso.com",
+        "",
+        "Available Teams: 4",
+        "  - Engineering (23 members)",
+        "  - Product (15 members)",
+        "  - DevOps (8 members)",
+        "  - Security (6 members)",
+        "",
+        "=== Recent Activity ===",
+        "",
+        "Channel: #engineering-general",
+        "  Last message: 2 minutes ago",
+        "  Unread: 5 messages",
+        "",
+        "Channel: #incidents",
+        "  Last message: 15 minutes ago",
+        "  Unread: 0 messages",
+        "",
+        "=== Notification Sent ===",
+        "",
+        "Posted to #engineering-general:",
+        '  "Build #1234 completed successfully"',
+        "  Reactions: 3",
+        "",
+        "--- Completed: Microsoft Teams ---",
+      ];
+
     default:
       return [
         `--- Running: ${demoId} ---`,
@@ -482,6 +564,18 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
             C -->|Prioritize| D[Critical/High]
             D -->|Remediation| E[PR Creation]
             F[SBOM Report] --> C
+        `;
+
+      case "teams":
+        return `
+          graph LR
+            A[Copilot SDK] -->|MS Graph| B[Teams API]
+            B -->|Read| C[Channels]
+            B -->|Read| D[Messages]
+            B -->|Send| E[Notifications]
+            C --> F[Team Hub]
+            D --> F
+            E --> F
         `;
 
       default:
@@ -679,15 +773,6 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
               <div className="modal-header-content">
                 <div className="modal-title-row">
                   <h2 className="modal-title">{demo.name}</h2>
-                  <Badge
-                    variant={
-                      demo.status === "implemented"
-                        ? "status-implemented"
-                        : "status-planned"
-                    }
-                  >
-                    {demo.status}
-                  </Badge>
                 </div>
                 <p className="modal-description">{demo.description}</p>
               </div>
@@ -743,10 +828,28 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                       >
                         <div className="modal-tokens-header">
                           <Key size={14} />
-                          <span>
-                            API Credentials (optional for mock connectors)
-                          </span>
+                          <span>API Credentials</span>
                         </div>
+
+                        <div className="modal-tokens-github-help">
+                          <div className="modal-tokens-github-help-text">
+                            <Github size={14} />
+                            <span>GitHub PAT required for Copilot SDK</span>
+                          </div>
+                          <a
+                            href="https://github.com/settings/tokens/new?scopes=copilot&description=Copilot%20SDK%20Samples"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="modal-tokens-github-link"
+                          >
+                            <span>Create token on GitHub</span>
+                            <ExternalLink size={12} />
+                          </a>
+                          <p className="modal-tokens-github-scopes">
+                            Required scope: <code>copilot</code>
+                          </p>
+                        </div>
+
                         <div className="modal-tokens-fields">
                           {tokenFields.map((field) => (
                             <div key={field.key} className="modal-token-field">

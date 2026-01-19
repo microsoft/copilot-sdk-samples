@@ -26,34 +26,37 @@ const DEMO_CONFIGS: Record<string, DemoConfig> = {
     id: "hello-world",
     name: "Hello World",
     description: "Basic SDK setup and interaction",
-    command: "tsx samples/hello-world/sdk/index.ts",
+    command: "npx tsx samples/hello-world/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required" },
   },
   "issue-triage": {
     id: "issue-triage",
     name: "Issue Triage",
     description: "Auto-label and triage GitHub issues using AI",
-    command: "tsx samples/issue-triage/sdk/index.ts",
-    envVars: { GITHUB_TOKEN: "optional" },
+    command: "npx tsx samples/issue-triage/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required" },
   },
   "security-alerts": {
     id: "security-alerts",
     name: "Security Alerts",
     description: "Prioritize and remediate security vulnerabilities",
-    command: "tsx samples/security-alerts/sdk/index.ts",
-    envVars: { GITHUB_TOKEN: "optional" },
+    command: "npx tsx samples/security-alerts/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required" },
   },
   "mcp-orchestration": {
     id: "mcp-orchestration",
     name: "MCP Orchestration",
     description: "Query dev infrastructure via Model Context Protocol",
-    command: "tsx samples/mcp-orchestration/sdk/index.ts",
+    command: "npx tsx samples/mcp-orchestration/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required" },
   },
   "jira-confluence": {
     id: "jira-confluence",
     name: "Jira + Confluence",
     description: "Atlassian integration for issue sync and documentation",
-    command: "tsx samples/jira-confluence/sdk/index.ts",
+    command: "npx tsx samples/jira-confluence/sdk/index.ts",
     envVars: {
+      GITHUB_TOKEN: "required",
       JIRA_HOST: "optional",
       JIRA_EMAIL: "optional",
       JIRA_API_TOKEN: "optional",
@@ -63,8 +66,38 @@ const DEMO_CONFIGS: Record<string, DemoConfig> = {
     id: "pagerduty",
     name: "PagerDuty",
     description: "Incident management and on-call scheduling",
-    command: "tsx samples/pagerduty/sdk/index.ts",
-    envVars: { PAGERDUTY_API_KEY: "optional" },
+    command: "npx tsx samples/pagerduty/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required", PAGERDUTY_API_KEY: "optional" },
+  },
+  datadog: {
+    id: "datadog",
+    name: "Datadog",
+    description: "Monitoring and observability integration",
+    command: "npx tsx samples/datadog/sdk/index.ts",
+    envVars: {
+      GITHUB_TOKEN: "required",
+      DATADOG_API_KEY: "optional",
+      DATADOG_APP_KEY: "optional",
+    },
+  },
+  snyk: {
+    id: "snyk",
+    name: "Snyk",
+    description: "Security scanning and vulnerability detection",
+    command: "npx tsx samples/snyk/sdk/index.ts",
+    envVars: { GITHUB_TOKEN: "required", SNYK_TOKEN: "optional" },
+  },
+  teams: {
+    id: "teams",
+    name: "Microsoft Teams",
+    description: "Microsoft Teams collaboration integration",
+    command: "npx tsx samples/teams/sdk/index.ts",
+    envVars: {
+      GITHUB_TOKEN: "required",
+      TEAMS_TENANT_ID: "optional",
+      TEAMS_CLIENT_ID: "optional",
+      TEAMS_CLIENT_SECRET: "optional",
+    },
   },
 };
 
@@ -115,6 +148,8 @@ app.post(
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
 
     const env: Record<string, string> = {
       ...(process.env as Record<string, string>),
@@ -127,37 +162,63 @@ app.post(
       });
     }
 
-    const [cmd, ...args] = demo.command.split(" ");
-    const child = spawn(cmd, args, {
+    console.log(`[DEBUG] Spawning: ${demo.command}`);
+    console.log(`[DEBUG] CWD: ${ROOT_DIR}`);
+
+    const child = spawn(demo.command, [], {
       cwd: ROOT_DIR,
       env,
       shell: true,
+      stdio: ["pipe", "pipe", "pipe"],
     });
 
+    console.log(`[DEBUG] Child spawned, pid: ${child.pid}`);
+
+    let processExited = false;
+
     const sendEvent = (type: string, data: string) => {
+      console.log(`[DEBUG] Sending event: ${type}`);
       res.write(`event: ${type}\ndata: ${JSON.stringify({ data })}\n\n`);
     };
 
     child.stdout.on("data", (data: Buffer) => {
+      console.log(
+        `[DEBUG] stdout received: ${data.toString().trim().substring(0, 80)}`,
+      );
       sendEvent("output", data.toString());
     });
 
     child.stderr.on("data", (data: Buffer) => {
+      console.log(
+        `[DEBUG] stderr received: ${data.toString().trim().substring(0, 80)}`,
+      );
       sendEvent("error", data.toString());
     });
 
-    child.on("close", (code: number | null) => {
+    child.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
+      console.log(`[DEBUG] Process closed - code: ${code}, signal: ${signal}`);
+      processExited = true;
       sendEvent("complete", `Process exited with code ${code}`);
       res.end();
     });
 
     child.on("error", (err: Error) => {
+      console.log(`[DEBUG] Process error: ${err.message}`);
+      processExited = true;
       sendEvent("error", `Failed to start: ${err.message}`);
       res.end();
     });
 
     req.on("close", () => {
-      child.kill();
+      console.log(`[DEBUG] Request closed, processExited: ${processExited}`);
+    });
+
+    res.on("close", () => {
+      console.log(`[DEBUG] Response closed, processExited: ${processExited}`);
+      if (!processExited) {
+        console.log(`[DEBUG] Killing child process`);
+        child.kill();
+      }
     });
   },
 );
