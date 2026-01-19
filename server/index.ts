@@ -132,6 +132,8 @@ app.get("/api/demos/:id", (req: Request<{ id: string }>, res: Response) => {
 interface RunDemoBody {
   tokens?: Record<string, string>;
   mode?: "mock" | "live";
+  command?: string;
+  demoType?: "sdk" | "ghaw";
 }
 
 app.post(
@@ -143,7 +145,16 @@ app.post(
       return;
     }
 
-    const { tokens = {}, mode = "mock" } = req.body;
+    const { tokens = {}, mode = "mock", command, demoType = "sdk" } = req.body;
+
+    let execCommand: string;
+    if (command) {
+      execCommand = command;
+    } else if (demoType === "ghaw") {
+      execCommand = `gh copilot aw run .github/aw/samples/${demo.id}.md`;
+    } else {
+      execCommand = demo.command;
+    }
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -162,10 +173,10 @@ app.post(
       });
     }
 
-    console.log(`[DEBUG] Spawning: ${demo.command}`);
+    console.log(`[DEBUG] Spawning: ${execCommand}`);
     console.log(`[DEBUG] CWD: ${ROOT_DIR}`);
 
-    const child = spawn(demo.command, [], {
+    const child = spawn(execCommand, [], {
       cwd: ROOT_DIR,
       env,
       shell: true,

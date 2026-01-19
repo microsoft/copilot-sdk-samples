@@ -27,6 +27,7 @@ interface DemoDetailModalProps {
 }
 
 type ExecutionMode = "mock" | "live";
+type DemoType = "sdk" | "ghaw";
 
 interface TokenField {
   key: string;
@@ -457,6 +458,13 @@ const getMockOutput = (demoId: string): string[] => {
 
 const API_BASE_URL = "http://localhost:3001";
 
+const getDefaultCommand = (demoId: string, demoType: DemoType): string => {
+  if (demoType === "ghaw") {
+    return `gh copilot aw run .github/aw/samples/${demoId}.md`;
+  }
+  return `pnpm ${demoId}`;
+};
+
 const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   demo,
   onClose,
@@ -467,6 +475,8 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   const [output, setOutput] = useState<string[]>([]);
   const [showOutput, setShowOutput] = useState(false);
   const [mode, setMode] = useState<ExecutionMode>("mock");
+  const [demoType, setDemoType] = useState<DemoType>("sdk");
+  const [command, setCommand] = useState<string>("");
   const [tokens, setTokens] = useState<Record<string, string>>({});
   const [showTokens, setShowTokens] = useState<Record<string, boolean>>({});
   const [serverAvailable, setServerAvailable] = useState<boolean | null>(null);
@@ -475,6 +485,13 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const tokenFields = TOKEN_FIELDS[demo.id] || [];
+  const hasBothTypes = demo.features.sdk && demo.features.ghaw;
+
+  useEffect(() => {
+    if (isOpen) {
+      setCommand(getDefaultCommand(demo.id, demoType));
+    }
+  }, [isOpen, demo.id, demoType]);
   const hasTokenFields = tokenFields.length > 0;
 
   useEffect(() => {
@@ -649,6 +666,8 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
       setIsRunning(false);
       setTokens({});
       setShowTokens({});
+      setDemoType("sdk");
+      setCommand("");
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -662,11 +681,10 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   }, [output]);
 
   const handleCopyCommand = useCallback(() => {
-    const command = `pnpm ${demo.id}`;
     navigator.clipboard.writeText(command);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [demo.id]);
+  }, [command]);
 
   const handleTokenChange = useCallback((key: string, value: string) => {
     setTokens((prev) => ({ ...prev, [key]: value }));
@@ -693,7 +711,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
       const response = await fetch(`${API_BASE_URL}/api/demos/${demo.id}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokens, mode: "live" }),
+        body: JSON.stringify({ tokens, mode: "live", command, demoType }),
         signal: abortControllerRef.current.signal,
       });
 
@@ -744,7 +762,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
         await runMockDemo();
       }
     }
-  }, [demo.id, tokens, runMockDemo]);
+  }, [demo.id, tokens, command, demoType, runMockDemo]);
 
   const handleRunDemo = useCallback(async () => {
     setIsRunning(true);
@@ -923,8 +941,33 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                     )}
                   </AnimatePresence>
 
+                  {hasBothTypes && (
+                    <div className="modal-type-toggle">
+                      <button
+                        className={`modal-type-button ${demoType === "sdk" ? "active" : ""}`}
+                        onClick={() => setDemoType("sdk")}
+                      >
+                        <Code2 size={14} />
+                        SDK
+                      </button>
+                      <button
+                        className={`modal-type-button ${demoType === "ghaw" ? "active" : ""}`}
+                        onClick={() => setDemoType("ghaw")}
+                      >
+                        <Terminal size={14} />
+                        gh-aw
+                      </button>
+                    </div>
+                  )}
+
                   <div className="modal-command">
-                    <code className="modal-command-text">pnpm {demo.id}</code>
+                    <input
+                      type="text"
+                      className="modal-command-input"
+                      value={command}
+                      onChange={(e) => setCommand(e.target.value)}
+                      spellCheck={false}
+                    />
                     <div className="modal-command-actions">
                       <button
                         className={`modal-command-copy ${copied ? "copied" : ""}`}
