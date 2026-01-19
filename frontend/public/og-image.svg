@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#010409;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="sparkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8957e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6e40c9;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="codeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6e40c9;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#8957e5;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#6e40c9;stop-opacity:0" />
+    </linearGradient>
+
+    <pattern id="gridPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#6e40c9" stroke-width="0.5" stroke-opacity="0.1"/>
+    </pattern>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="20" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)" />
+
+  <!-- Grid pattern overlay -->
+  <rect width="1200" height="630" fill="url(#gridPattern)" />
+
+  <!-- Decorative code lines in background -->
+  <g opacity="0.15">
+    <line x1="100" y1="500" x2="400" y2="500" stroke="#8957e5" stroke-width="2" />
+    <line x1="100" y1="520" x2="350" y2="520" stroke="#8957e5" stroke-width="2" />
+    <line x1="100" y1="540" x2="380" y2="540" stroke="#8957e5" stroke-width="2" />
+
+    <line x1="800" y1="100" x2="1100" y2="100" stroke="#8957e5" stroke-width="2" />
+    <line x1="800" y1="120" x2="1050" y2="120" stroke="#8957e5" stroke-width="2" />
+    <line x1="800" y1="140" x2="1080" y2="140" stroke="#8957e5" stroke-width="2" />
+  </g>
+
+  <!-- Large spark icon with glow -->
+  <g filter="url(#glow)" transform="translate(500, 200)">
+    <path d="M100 0 L200 100 L100 200 L0 100 Z" fill="url(#sparkGradient)" opacity="0.9" />
+    <path d="M100 40 L120 80 L160 100 L120 120 L100 160 L80 120 L40 100 L80 80 Z" fill="#0d1117" />
+    <circle cx="100" cy="100" r="8" fill="#8957e5" />
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="420" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#ffffff" letter-spacing="-1">
+    Copilot SDK Samples
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="480" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="400" fill="#c9d1d9" letter-spacing="0.5">
+    Build AI-powered workflows with GitHub Copilot
+  </text>
+
+  <!-- Small badge/tags -->
+  <g transform="translate(600, 540)">
+    <rect x="-120" y="-18" width="240" height="36" rx="18" fill="#6e40c9" opacity="0.3" />
+    <text x="0" y="7" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="500" fill="#ffffff">
+      TypeScript · Node.js · AI
+    </text>
+  </g>
+
+  <!-- Decorative corner elements -->
+  <g opacity="0.4">
+    <path d="M30 30 L60 30 L60 40 L40 40 L40 60 L30 60 Z" fill="#8957e5" />
+    <path d="M1170 30 L1140 30 L1140 40 L1160 40 L1160 60 L1170 60 Z" fill="#8957e5" />
+    <path d="M30 600 L60 600 L60 590 L40 590 L40 570 L30 570 Z" fill="#8957e5" />
+    <path d="M1170 600 L1140 600 L1140 590 L1160 590 L1160 570 L1170 570 Z" fill="#8957e5" />
+  </g>
+</svg>

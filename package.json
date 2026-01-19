@@ -1,0 +1,62 @@
+{
+  "name": "copilot-sdk-samples",
+  "version": "1.0.0",
+  "description": "Sample applications demonstrating GitHub Copilot SDK and Agentic Workflows",
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "frontend": "cd frontend && pnpm dev",
+    "frontend:build": "cd frontend && pnpm build",
+    "hello-world": "tsx samples/hello-world/sdk/index.ts",
+    "issue-triage": "tsx samples/issue-triage/sdk/index.ts",
+    "security-alerts": "tsx samples/security-alerts/sdk/index.ts",
+    "mcp-orchestration": "tsx samples/mcp-orchestration/sdk/index.ts",
+    "jira-confluence": "tsx samples/jira-confluence/sdk/index.ts",
+    "pagerduty": "tsx samples/pagerduty/sdk/index.ts",
+    "datadog": "tsx samples/datadog/sdk/index.ts",
+    "snyk": "tsx samples/snyk/sdk/index.ts",
+    "slack": "tsx samples/slack/sdk/index.ts",
+    "teams": "tsx samples/teams/sdk/index.ts",
+    "server": "tsx server/index.ts",
+    "dev": "concurrently \"pnpm server\" \"pnpm frontend\"",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "copilot",
+    "github",
+    "sdk",
+    "agentic-workflows"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@github/copilot-sdk": "^0.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "framer-motion": "^12.27.0",
+    "mermaid": "^11.12.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.0",
+    "@vitest/coverage-v8": "^4.0.17",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "prettier": "^3.8.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.53.0",
+    "vitest": "^4.0.17"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "$schema": "./catalog.schema.json",
+  "version": "1.0.0",
+  "repositoryUrl": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples",
+  "demos": [
+    {
+      "id": "hello-world",
+      "name": "Hello World",
+      "description": "Get started in minutes with this foundational sample. Perfect for developers new to the Copilot SDK, demonstrating core concepts like client initialization, agent communication, and response handling. Ideal first step before building production integrations.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "both",
+      "features": {
+        "sdk": true,
+        "ghaw": true
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/hello-world/sdk",
+        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/hello-world.md"
+      },
+      "dependencies": [],
+      "connectors": [],
+      "audience": "All Developers",
+      "timeToValue": "5 minutes"
+    },
+    {
+      "id": "issue-triage",
+      "name": "Issue Triage",
+      "description": "Reduce manual triage time by 70%+ with AI-powered issue classification. Automatically categorize, prioritize, and label incoming GitHub issues based on content analysis. Essential for teams managing high-volume repositories seeking to improve response times and developer productivity.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "both",
+      "features": {
+        "sdk": true,
+        "ghaw": true
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/issue-triage/sdk",
+        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/issue-triage.md"
+      },
+      "dependencies": [],
+      "connectors": ["github"],
+      "audience": "Engineering Managers, DevOps Teams",
+      "timeToValue": "1 hour"
+    },
+    {
+      "id": "security-alerts",
+      "name": "Security Alerts",
+      "description": "Accelerate vulnerability remediation with intelligent prioritization. Analyzes security alerts by severity, exploitability, and business impact to surface critical issues first. Helps security teams reduce MTTR and maintain compliance while focusing on what matters most.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "both",
+      "features": {
+        "sdk": true,
+        "ghaw": true
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/security-alerts/sdk",
+        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/security-alerts.md"
+      },
+      "dependencies": [],
+      "connectors": ["github"],
+      "audience": "Security Engineers, Platform Teams",
+      "timeToValue": "2 hours"
+    },
+    {
+      "id": "mcp-orchestration",
+      "name": "MCP Orchestration",
+      "description": "Unify your dev infrastructure queries through Model Context Protocol. Connect CI/CD pipelines, Kubernetes clusters, and monitoring systems into a single AI-queryable interface. Enables natural language infrastructure queries, reducing context-switching and accelerating incident response.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "both",
+      "features": {
+        "sdk": true,
+        "ghaw": true
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/mcp-orchestration/sdk",
+        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/mcp-orchestration.md"
+      },
+      "dependencies": [],
+      "connectors": [],
+      "audience": "Platform Engineers, SREs",
+      "timeToValue": "4 hours"
+    },
+    {
+      "id": "jira-confluence",
+      "name": "Jira + Confluence",
+      "description": "Bridge GitHub and Atlassian workflows seamlessly. Automatically sync issues between platforms, generate Confluence documentation from code changes, and maintain bidirectional traceability. Ideal for enterprises running hybrid toolchains who need unified visibility across systems.",
+      "tier": "isv-tier-1",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/jira-confluence/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["jira", "confluence"],
+      "audience": "Enterprise Teams, Project Managers",
+      "timeToValue": "3 hours"
+    },
+    {
+      "id": "pagerduty",
+      "name": "PagerDuty",
+      "description": "Enhance incident management with AI-powered insights. Analyze active incidents, suggest runbooks, and provide on-call context automatically. Helps reduce MTTR by surfacing relevant information and historical patterns during critical outages.",
+      "tier": "isv-tier-1",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/pagerduty/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["pagerduty"],
+      "audience": "SREs, On-Call Engineers",
+      "timeToValue": "2 hours"
+    },
+    {
+      "id": "datadog",
+      "name": "Datadog",
+      "description": "Surface actionable insights from your observability data. Query metrics, analyze logs, and correlate alerts through natural language. Enables faster root cause analysis and proactive monitoring for teams invested in the Datadog ecosystem.",
+      "tier": "isv-tier-1",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/datadog/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["datadog"],
+      "audience": "DevOps Engineers, SREs",
+      "timeToValue": "2 hours"
+    },
+    {
+      "id": "snyk",
+      "name": "Snyk",
+      "description": "Shift security left with intelligent vulnerability management. Scan dependencies, prioritize fixes by business impact, and generate remediation PRs automatically. Essential for teams building secure software at scale while maintaining development velocity.",
+      "tier": "isv-tier-1",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/snyk/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["snyk"],
+      "audience": "Security Teams, AppSec Engineers",
+      "timeToValue": "2 hours"
+    },
+    {
+      "id": "teams",
+      "name": "Microsoft Teams",
+      "description": "Bring AI-powered workflows directly into Microsoft Teams. Send intelligent notifications, enable conversational queries, and automate approvals where your team already collaborates. The flagship integration demonstrating Copilot SDK's enterprise communication capabilities.",
+      "tier": "isv-tier-1",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/teams/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["teams"],
+      "audience": "Enterprise Developers, IT Teams",
+      "timeToValue": "3 hours",
+      "featured": true
+    }
+  ],
+  "connectors": [
+    {
+      "id": "github",
+      "name": "GitHub",
+      "description": "GitHub issues, PRs, and security alerts",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github/client.ts"
+      }
+    },
+    {
+      "id": "jira",
+      "name": "Jira",
+      "description": "Atlassian Jira issue tracker",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/jira/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/jira/client.ts"
+      }
+    },
+    {
+      "id": "confluence",
+      "name": "Confluence",
+      "description": "Atlassian Confluence wiki",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/confluence/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/confluence/client.ts"
+      }
+    },
+    {
+      "id": "pagerduty",
+      "name": "PagerDuty",
+      "description": "Incident management platform",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/pagerduty/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/pagerduty/client.ts"
+      }
+    },
+    {
+      "id": "datadog",
+      "name": "Datadog",
+      "description": "Monitoring and analytics platform",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/datadog/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/datadog/client.ts"
+      }
+    },
+    {
+      "id": "snyk",
+      "name": "Snyk",
+      "description": "Developer security platform",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/snyk/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/snyk/client.ts"
+      }
+    },
+    {
+      "id": "teams",
+      "name": "Microsoft Teams",
+      "description": "Microsoft Teams collaboration platform via MS Graph",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts"
+      }
+    }
+  ],
+  "tiers": {
+    "mandatory": {
+      "name": "Core Samples",
+      "priority": 1,
+      "description": "Essential samples demonstrating fundamental Copilot SDK capabilities"
+    },
+    "isv-tier-1": {
+      "name": "ISV Integrations",
+      "priority": 2,
+      "description": "Production-ready integrations with popular enterprise tools"
+    },
+    "isv-tier-2": {
+      "name": "Advanced Integrations",
+      "priority": 3,
+      "description": "Complex integrations requiring additional setup"
+    }
+  }
+}

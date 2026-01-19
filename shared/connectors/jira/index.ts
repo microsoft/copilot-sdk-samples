@@ -1,0 +1,18 @@
+export {
+  createJiraConnector,
+  type JiraConnector,
+  type JiraConnectorConfig,
+  type JiraIssue,
+  type JiraStatus,
+  type JiraPriority,
+  type JiraIssueType,
+  type JiraUser,
+  type JiraComponent,
+  type JiraProject,
+  type JiraResolution,
+  type JiraSprint,
+  type JiraIssueLink,
+  type JiraComment,
+  type JiraBoard,
+  type JiraSearchResult,
+} from "./client.js";

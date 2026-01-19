@@ -1,0 +1,72 @@
+services:
+  test:
+    build:
+      context: .
+      target: test
+    profiles: ["test"]
+    volumes:
+      - .:/app:ro
+      - /app/node_modules
+
+  dev:
+    build:
+      context: .
+      target: development
+    profiles: ["dev"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+
+  hello-world:
+    build:
+      context: .
+      target: production
+    profiles: ["samples"]
+    env_file:
+      - .env
+    command: ["node", "dist/samples/hello-world/sdk/index.js"]
+
+  issue-triage:
+    build:
+      context: .
+      target: production
+    profiles: ["samples", "mandatory"]
+    env_file:
+      - .env
+    environment:
+      - CONNECTOR_MODE=mock
+    command: ["node", "dist/samples/issue-triage/sdk/index.js"]
+
+  security-alerts:
+    build:
+      context: .
+      target: production
+    profiles: ["samples", "mandatory"]
+    env_file:
+      - .env
+    environment:
+      - CONNECTOR_MODE=mock
+    command: ["node", "dist/samples/security-alerts/sdk/index.js"]
+
+  mcp-orchestration:
+    build:
+      context: .
+      target: production
+    profiles: ["samples", "mandatory"]
+    env_file:
+      - .env
+    environment:
+      - CONNECTOR_MODE=mock
+    command: ["node", "dist/samples/mcp-orchestration/sdk/index.js"]
+
+  github-mcp-server:
+    image: ghcr.io/github/github-mcp-server:latest
+    profiles: ["mcp"]
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_TOKEN}
+    ports:
+      - "3000:3000"

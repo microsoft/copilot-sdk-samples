@@ -1,0 +1,16 @@
+export {
+  createConfluenceConnector,
+  type ConfluenceConnector,
+  type ConfluenceConnectorConfig,
+  type ConfluencePage,
+  type ConfluenceBody,
+  type ConfluenceVersion,
+  type ConfluencePageAncestor,
+  type ConfluencePageChild,
+  type ConfluenceUser,
+  type ConfluenceLabel,
+  type ConfluenceSpace,
+  type ConfluenceSearchResult,
+  type ConfluenceComment,
+  type ConfluenceAttachment,
+} from "./client.js";

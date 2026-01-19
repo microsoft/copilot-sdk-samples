@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Demo Catalog",
+  "type": "object",
+  "required": ["version", "demos", "connectors", "tiers"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "demos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "tier", "status", "features"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "tier": {
+            "type": "string",
+            "enum": ["mandatory", "isv-tier-1", "isv-tier-2"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["planned", "in-progress", "implemented"]
+          },
+          "features": {
+            "type": "object",
+            "properties": {
+              "sdk": { "type": "boolean" },
+              "ghaw": { "type": "boolean" }
+            }
+          },
+          "paths": {
+            "type": "object",
+            "properties": {
+              "sdk": { "type": "string" },
+              "ghaw": { "type": "string" }
+            }
+          },
+          "dependencies": { "type": "array", "items": { "type": "string" } },
+          "connectors": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "connectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["planned", "in-progress", "implemented"]
+          },
+          "paths": {
+            "type": "object",
+            "properties": {
+              "client": { "type": "string" },
+              "mock": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "tiers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "priority", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "priority": { "type": "integer" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}

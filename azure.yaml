@@ -1,0 +1,20 @@
+name: copilot-sdk-samples
+metadata:
+  template: copilot-sdk-samples@1.0.0
+
+workflows:
+  up:
+    steps:
+      - azd: provision
+      - azd: deploy
+
+services:
+  samples:
+    project: .
+    language: ts
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: .
+      target: production
+      remoteBuild: true
