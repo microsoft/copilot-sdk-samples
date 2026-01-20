@@ -86,27 +86,24 @@ describe("test/helpers", () => {
   });
 
   describe("createTimedMock", () => {
-    it("should return a function that resolves after delay", async () => {
-      const mockValue = { data: "test" };
-      const timedMock = createTimedMock(mockValue, 10);
+    it("should create a mock function that resolves after delay", async () => {
+      const mockFn = createTimedMock("test-value", 10);
 
       const start = Date.now();
-      const result = await timedMock();
+      const result = await mockFn();
       const elapsed = Date.now() - start;
 
-      expect(result).toEqual(mockValue);
-      expect(elapsed).toBeGreaterThanOrEqual(9);
+      expect(result).toBe("test-value");
+      expect(elapsed).toBeGreaterThanOrEqual(9); // Allow 1ms variance
     });
 
     it("should use default delay of 10ms", async () => {
-      const mockValue = "default delay";
-      const timedMock = createTimedMock(mockValue);
+      const mockFn = createTimedMock({ data: "test" });
 
       const start = Date.now();
-      const result = await timedMock();
+      await mockFn();
       const elapsed = Date.now() - start;
 
-      expect(result).toBe(mockValue);
       expect(elapsed).toBeGreaterThanOrEqual(9);
     });
 
@@ -118,30 +115,29 @@ describe("test/helpers", () => {
   });
 
   describe("withTimeout", () => {
-    it("should resolve when promise completes before timeout", async () => {
-      const fastPromise = Promise.resolve("fast result");
+    it("should resolve if promise completes before timeout", async () => {
+      const promise = Promise.resolve("success");
 
-      const result = await withTimeout(fastPromise, 1000);
+      const result = await withTimeout(promise, 100);
 
-      expect(result).toBe("fast result");
+      expect(result).toBe("success");
     });
 
-    it("should reject when promise takes longer than timeout", async () => {
-      const slowPromise = new Promise<string>((resolve) =>
-        setTimeout(() => resolve("slow result"), 200),
+    it("should reject if promise exceeds timeout", async () => {
+      const slowPromise = new Promise((resolve) =>
+        setTimeout(() => resolve("slow"), 100),
       );
 
-      await expect(withTimeout(slowPromise, 50)).rejects.toThrow(
-        "Timeout after 50ms",
+      await expect(withTimeout(slowPromise, 10)).rejects.toThrow(
+        "Timeout after 10ms",
       );
     });
 
     it("should use default timeout of 5000ms", async () => {
-      const quickPromise = Promise.resolve("quick");
+      const promise = Promise.resolve("fast");
+      const result = await withTimeout(promise);
 
-      const result = await withTimeout(quickPromise);
-
-      expect(result).toBe("quick");
+      expect(result).toBe("fast");
     });
 
     it("should preserve the result type", async () => {
@@ -154,7 +150,7 @@ describe("test/helpers", () => {
   });
 
   describe("createSpyConnector", () => {
-    it("should create spy methods for connector interface", () => {
+    it("should create a connector with all required methods", () => {
       const spy = createSpyConnector();
 
       expect(spy).toHaveProperty("initialize");
