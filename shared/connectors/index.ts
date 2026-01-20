@@ -6,3 +6,5 @@ export * from "./pagerduty/index.js";
 export * from "./datadog/index.js";
 export * from "./snyk/index.js";
 export * from "./isv/index.js";
+export * from "./aca-sessions/index.js";
+export * from "./github-actions/index.js";

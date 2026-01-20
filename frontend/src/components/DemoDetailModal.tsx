@@ -17,11 +17,18 @@ import {
   Code2,
   ChevronDown,
   ChevronUp,
-  Pencil,
+  Settings2,
+  Database,
+  Wifi,
+  Loader2,
 } from "lucide-react";
 import mermaid from "mermaid";
 import type { Demo } from "../types";
 import Badge from "./Badge";
+import { RLMViewer } from "./RLMVisualization";
+import { SkillTestingViewer } from "./SkillTestingVisualization";
+import { mockRLMExecution } from "../data/rlmMockData";
+import { skillTestingMockData } from "../data/skillTestingMockData";
 
 interface DemoDetailModalProps {
   demo: Demo;
@@ -39,6 +46,200 @@ interface TokenField {
   helpUrl?: string;
   helpText?: string;
 }
+
+interface SampleParam {
+  key: string;
+  label: string;
+  placeholder: string;
+  defaultValue: string;
+  type?: "text" | "textarea" | "select";
+  options?: { value: string; label: string }[];
+}
+
+const SAMPLE_PARAMS: Record<string, SampleParam[]> = {
+  "hello-world": [
+    {
+      key: "prompt",
+      label: "Prompt",
+      placeholder: "Enter your message to Copilot...",
+      defaultValue: "Hello, world!",
+      type: "textarea",
+    },
+  ],
+  "issue-triage": [
+    {
+      key: "repo",
+      label: "Repository",
+      placeholder: "owner/repo",
+      defaultValue: "microsoft/vscode",
+    },
+    {
+      key: "state",
+      label: "Issue State",
+      placeholder: "Filter by state",
+      defaultValue: "open",
+      type: "select",
+      options: [
+        { value: "open", label: "Open" },
+        { value: "closed", label: "Closed" },
+        { value: "all", label: "All" },
+      ],
+    },
+    {
+      key: "limit",
+      label: "Max Issues",
+      placeholder: "Number of issues to fetch",
+      defaultValue: "5",
+    },
+  ],
+  "security-alerts": [
+    {
+      key: "repo",
+      label: "Repository",
+      placeholder: "owner/repo",
+      defaultValue: "microsoft/vscode",
+    },
+    {
+      key: "severity",
+      label: "Minimum Severity",
+      placeholder: "Filter by severity",
+      defaultValue: "high",
+      type: "select",
+      options: [
+        { value: "critical", label: "Critical" },
+        { value: "high", label: "High" },
+        { value: "medium", label: "Medium" },
+        { value: "low", label: "Low" },
+      ],
+    },
+    {
+      key: "limit",
+      label: "Max Alerts",
+      placeholder: "Number of alerts to fetch",
+      defaultValue: "10",
+    },
+  ],
+  "mcp-orchestration": [
+    {
+      key: "query",
+      label: "Query",
+      placeholder: "What would you like to know about the infrastructure?",
+      defaultValue: "Show me the current deployment status",
+      type: "textarea",
+    },
+  ],
+  "jira-confluence": [
+    {
+      key: "project_key",
+      label: "Jira Project Key",
+      placeholder: "e.g., PROJ",
+      defaultValue: "DEMO",
+    },
+    {
+      key: "space_key",
+      label: "Confluence Space Key",
+      placeholder: "e.g., ENG",
+      defaultValue: "DOCS",
+    },
+  ],
+  pagerduty: [
+    {
+      key: "urgency",
+      label: "Urgency Filter",
+      placeholder: "Filter by urgency",
+      defaultValue: "high",
+      type: "select",
+      options: [
+        { value: "high", label: "High" },
+        { value: "low", label: "Low" },
+        { value: "all", label: "All" },
+      ],
+    },
+    {
+      key: "limit",
+      label: "Max Incidents",
+      placeholder: "Number of incidents to fetch",
+      defaultValue: "10",
+    },
+  ],
+  datadog: [
+    {
+      key: "query",
+      label: "Metrics Query",
+      placeholder: "Datadog metrics query",
+      defaultValue: "avg:system.cpu.user{*}",
+    },
+    {
+      key: "timeframe",
+      label: "Timeframe",
+      placeholder: "Time range",
+      defaultValue: "1h",
+      type: "select",
+      options: [
+        { value: "15m", label: "Last 15 minutes" },
+        { value: "1h", label: "Last hour" },
+        { value: "4h", label: "Last 4 hours" },
+        { value: "1d", label: "Last day" },
+      ],
+    },
+  ],
+  snyk: [
+    {
+      key: "severity",
+      label: "Minimum Severity",
+      placeholder: "Filter by severity",
+      defaultValue: "high",
+      type: "select",
+      options: [
+        { value: "critical", label: "Critical" },
+        { value: "high", label: "High" },
+        { value: "medium", label: "Medium" },
+        { value: "low", label: "Low" },
+      ],
+    },
+    {
+      key: "limit",
+      label: "Max Vulnerabilities",
+      placeholder: "Number of vulnerabilities to show",
+      defaultValue: "10",
+    },
+  ],
+  teams: [
+    {
+      key: "team_name",
+      label: "Team Name",
+      placeholder: "Name of the team",
+      defaultValue: "Engineering",
+    },
+    {
+      key: "channel",
+      label: "Channel",
+      placeholder: "Channel to interact with",
+      defaultValue: "general",
+    },
+  ],
+  "skill-testing": [
+    {
+      key: "skill_name",
+      label: "Skill Name",
+      placeholder: "Name of the skill to test",
+      defaultValue: "mcp-builder",
+      type: "select",
+      options: [{ value: "mcp-builder", label: "MCP Builder" }],
+    },
+    {
+      key: "test_mode",
+      label: "Test Mode",
+      placeholder: "How to run tests",
+      defaultValue: "mock",
+      type: "select",
+      options: [
+        { value: "mock", label: "Mock (Fast)" },
+        { value: "live", label: "Live (Real API)" },
+      ],
+    },
+  ],
+};
 
 // All demos require GITHUB_TOKEN for Copilot SDK API access
 const GITHUB_TOKEN_FIELD: TokenField = {
@@ -133,6 +334,7 @@ const TOKEN_FIELDS: Record<string, TokenField[]> = {
       placeholder: "your-client-secret",
     },
   ],
+  "skill-testing": [GITHUB_TOKEN_FIELD],
 };
 
 const getMockOutput = (demoId: string): string[] => {
@@ -448,6 +650,51 @@ const getMockOutput = (demoId: string): string[] => {
         "--- Completed: Microsoft Teams ---",
       ];
 
+    case "skill-testing":
+      return [
+        "--- Running: Skill Testing ---",
+        "Description: Test AI skills against acceptance criteria",
+        "",
+        "=== Loading Skill ===",
+        "",
+        "Skill: mcp-builder",
+        "Path: skills/mcp-builder/SKILL.md",
+        "Description: Guide for creating MCP clients",
+        "",
+        "=== Parsing Test Cases ===",
+        "",
+        "Found 1 test case:",
+        "  - mcp-builder-mslearn-1: Create an MCP client for Microsoft Learn",
+        "",
+        "=== Executing Tests ===",
+        "",
+        "Test: mcp-builder-mslearn-1",
+        "  Prompt: Create an MCP client for MS Learn documentation API...",
+        "  Status: Generating code via Copilot SDK...",
+        "",
+        "=== Evaluating Criteria ===",
+        "",
+        "  [✓] Code compiles: TypeScript structure detected",
+        "  [✓] Uses ConnectorResult: Pattern found",
+        "  [✓] Implements mock mode: Pattern found",
+        "  [✓] Has factory function: createMSLearnMCPClient found",
+        "  [✓] Includes test code: Test structure detected",
+        "",
+        "=== Results Summary ===",
+        "",
+        "Total Tests: 1",
+        "  Passed: 1",
+        "  Failed: 0",
+        "",
+        "Total Criteria: 5",
+        "  Passed: 5",
+        "  Failed: 0",
+        "",
+        "Duration: 147ms",
+        "",
+        "--- Completed: Skill Testing ---",
+      ];
+
     default:
       return [
         `--- Running: ${demoId} ---`,
@@ -459,7 +706,7 @@ const getMockOutput = (demoId: string): string[] => {
   }
 };
 
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const getDefaultCommand = (demoId: string, demoType: DemoType): string => {
   if (demoType === "ghaw") {
@@ -484,21 +731,76 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   const [showTokens, setShowTokens] = useState<Record<string, boolean>>({});
   const [serverAvailable, setServerAvailable] = useState<boolean | null>(null);
   const [credentialsCollapsed, setCredentialsCollapsed] = useState(false);
+  const [rlmCredentialsAutoCollapsed, setRlmCredentialsAutoCollapsed] =
+    useState(false);
+  const [sampleParams, setSampleParams] = useState<Record<string, string>>({});
+  const [paramsCollapsed, setParamsCollapsed] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [rlmQuery, setRlmQuery] = useState("What is 2^(2^(2^(2)))?");
+  const [rlmExecution, setRlmExecution] = useState(mockRLMExecution);
+  const [rlmOwner, setRlmOwner] = useState("microsoft-foundry");
+  const [rlmRepo, setRlmRepo] = useState("copilot-sdk-ghaw-samples");
+  const [rlmStatus, setRlmStatus] = useState<string | null>(null);
   const mermaidRef = useRef<HTMLDivElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const tokenFields = TOKEN_FIELDS[demo.id] || [];
+  const paramFields = SAMPLE_PARAMS[demo.id] || [];
   const hasBothTypes = demo.features.sdk && demo.features.ghaw;
   const hasAllRequiredTokens = tokenFields.every(
     (f) => tokens[f.key]?.length > 0,
   );
+  const hasParamFields = paramFields.length > 0;
+
+  useEffect(() => {
+    if (isOpen && paramFields.length > 0) {
+      const defaults: Record<string, string> = {};
+      paramFields.forEach((field) => {
+        defaults[field.key] = field.defaultValue;
+      });
+      setSampleParams(defaults);
+    }
+  }, [isOpen, demo.id]);
 
   useEffect(() => {
     if (isOpen) {
       setCommand(getDefaultCommand(demo.id, demoType));
     }
   }, [isOpen, demo.id, demoType]);
+
+  useEffect(() => {
+    if (hasAllRequiredTokens && !credentialsCollapsed) {
+      const timer = setTimeout(() => {
+        setCredentialsCollapsed(true);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAllRequiredTokens]);
+
+  // Auto-collapse RLM credentials only when ALL required fields are filled (once)
+  useEffect(() => {
+    if (
+      demo.id === "rlm-orchestration" &&
+      tokens["GITHUB_TOKEN"] &&
+      rlmOwner.trim() &&
+      rlmRepo.trim() &&
+      !rlmCredentialsAutoCollapsed
+    ) {
+      const timer = setTimeout(() => {
+        setCredentialsCollapsed(true);
+        setRlmCredentialsAutoCollapsed(true);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    demo.id,
+    tokens["GITHUB_TOKEN"],
+    rlmOwner,
+    rlmRepo,
+    rlmCredentialsAutoCollapsed,
+  ]);
+
   const hasTokenFields = tokenFields.length > 0;
 
   useEffect(() => {
@@ -619,6 +921,16 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
             E --> F
         `;
 
+      case "skill-testing":
+        return `
+          graph LR
+            A[SKILL.md] -->|Parse| B[Test Harness]
+            B -->|Execute| C[Copilot SDK]
+            C -->|Generate| D[Code Output]
+            D -->|Evaluate| E[Criteria Check]
+            E -->|Report| F[Results]
+        `;
+
       default:
         return `
           graph LR
@@ -676,6 +988,12 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
       setDemoType("sdk");
       setCommand("");
       setCredentialsCollapsed(false);
+      setRlmCredentialsAutoCollapsed(false);
+      setSampleParams({});
+      setParamsCollapsed(false);
+      setOpenDropdown(null);
+      setRlmQuery("What is 2^(2^(2^(2)))?");
+      setRlmExecution(mockRLMExecution);
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -702,6 +1020,10 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
     setShowTokens((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
+  const handleParamChange = useCallback((key: string, value: string) => {
+    setSampleParams((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
   const runMockDemo = useCallback(async () => {
     const mockLines = getMockOutput(demo.id);
     for (let i = 0; i < mockLines.length; i++) {
@@ -719,7 +1041,13 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
       const response = await fetch(`${API_BASE_URL}/api/demos/${demo.id}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokens, mode: "live", command, demoType }),
+        body: JSON.stringify({
+          tokens,
+          mode: "live",
+          command,
+          demoType,
+          params: sampleParams,
+        }),
         signal: abortControllerRef.current.signal,
       });
 
@@ -770,7 +1098,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
         await runMockDemo();
       }
     }
-  }, [demo.id, tokens, command, demoType, runMockDemo]);
+  }, [demo.id, tokens, command, demoType, sampleParams, runMockDemo]);
 
   const handleRunDemo = useCallback(async () => {
     setIsRunning(true);
@@ -785,6 +1113,102 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
 
     setIsRunning(false);
   }, [mode, serverAvailable, runLiveDemo, runMockDemo]);
+
+  const handleRunRLM = useCallback(async () => {
+    if (!tokens["GITHUB_TOKEN"] || !rlmOwner || !rlmRepo) {
+      setRlmStatus("Missing required fields: token, owner, or repo");
+      return;
+    }
+
+    setIsRunning(true);
+    setRlmStatus("Connecting to GitHub Actions...");
+
+    const emptyExecution: typeof mockRLMExecution = {
+      ...mockRLMExecution,
+      status: "running",
+      iterations: [],
+      completedAt: undefined,
+      finalAnswer: undefined,
+    };
+    setRlmExecution(emptyExecution);
+
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/rlm/execute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: tokens["GITHUB_TOKEN"],
+          owner: rlmOwner,
+          repo: rlmRepo,
+          query: rlmQuery,
+        }),
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("No response body");
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const parsed = JSON.parse(line.slice(6));
+              if (parsed.phase) {
+                setRlmStatus(`${parsed.phase}: ${parsed.message || ""}`);
+              }
+              if (parsed.output) {
+                setRlmExecution((prev) => ({
+                  ...prev,
+                  finalAnswer: parsed.output,
+                }));
+              }
+            } catch {
+              // Skip malformed JSON
+            }
+          }
+        }
+      }
+
+      setRlmExecution((prev) => ({
+        ...prev,
+        status: "completed",
+        completedAt: new Date().toISOString(),
+      }));
+      setRlmStatus("Completed");
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        setRlmStatus("Stopped by user");
+      } else {
+        setRlmStatus(
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+        setRlmExecution((prev) => ({
+          ...prev,
+          status: "failed",
+        }));
+      }
+    }
+
+    setIsRunning(false);
+  }, [tokens, rlmOwner, rlmRepo, rlmQuery]);
 
   const handleStopDemo = useCallback(() => {
     if (abortControllerRef.current) {
@@ -805,7 +1229,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
           onClick={onClose}
         >
           <motion.div
-            className="modal-panel"
+            className={`modal-panel ${demo.id === "rlm-orchestration" || demo.id === "skill-testing" ? "modal-panel-wide" : ""}`}
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -825,69 +1249,114 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
             </div>
 
             <div className="modal-body">
-              <div className="modal-section">
-                <h3 className="modal-section-title">
-                  <Terminal size={18} />
-                  Run Demo
-                </h3>
-                <div className="modal-run-section">
-                  <div className="modal-mode-toggle">
-                    <button
-                      className={`modal-mode-button ${mode === "mock" ? "active" : ""}`}
-                      onClick={() => setMode("mock")}
-                    >
-                      <Cpu size={14} />
-                      Mock Data
-                    </button>
-                    <button
-                      className={`modal-mode-button ${mode === "live" ? "active" : ""}`}
-                      onClick={() => setMode("live")}
-                      disabled={!serverAvailable}
-                      title={
-                        serverAvailable === false
-                          ? "API server not running. Start with: pnpm server"
-                          : undefined
-                      }
-                    >
-                      <Server size={14} />
-                      Live API
-                      {serverAvailable === false && (
-                        <span className="mode-badge-offline">Offline</span>
-                      )}
-                      {serverAvailable && (
-                        <span className="mode-badge-online">Ready</span>
-                      )}
-                    </button>
-                  </div>
+              {demo.id === "rlm-orchestration" ? (
+                <div className="modal-section">
+                  <h3 className="modal-section-title">
+                    <Terminal size={18} />
+                    RLM Visualization
+                  </h3>
 
-                  <AnimatePresence>
-                    {mode === "live" && hasTokenFields && (
-                      <motion.div
-                        className={`modal-tokens ${credentialsCollapsed ? "collapsed" : ""}`}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
+                  <div className="modal-run-section">
+                    <div className="modal-mode-toggle">
+                      <button
+                        className={`modal-mode-button ${mode === "mock" ? "active" : ""}`}
+                        onClick={() => setMode("mock")}
                       >
-                        <button
-                          className="modal-tokens-header"
-                          onClick={() =>
-                            hasAllRequiredTokens &&
-                            setCredentialsCollapsed(!credentialsCollapsed)
-                          }
-                          type="button"
+                        <Database size={14} />
+                        Mock Data
+                      </button>
+                      <button
+                        className={`modal-mode-button ${mode === "live" ? "active" : ""}`}
+                        onClick={() => setMode("live")}
+                        disabled={!serverAvailable}
+                        title={
+                          serverAvailable === false
+                            ? "API server not running. Start with: pnpm server"
+                            : undefined
+                        }
+                      >
+                        <Wifi size={14} />
+                        Live API
+                        {serverAvailable === false && (
+                          <span className="mode-badge-offline">Offline</span>
+                        )}
+                        {serverAvailable && (
+                          <span className="mode-badge-online">Ready</span>
+                        )}
+                      </button>
+                    </div>
+
+                    {mode === "mock" && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "var(--space-3)",
+                          padding: "var(--space-3)",
+                          background: "var(--info-muted)",
+                          border: "1px solid rgba(59, 130, 246, 0.2)",
+                          borderRadius: "var(--radius-md)",
+                          marginTop: "var(--space-3)",
+                        }}
+                      >
+                        <Database
+                          size={16}
+                          style={{ color: "var(--info)", flexShrink: 0 }}
+                        />
+                        <div>
+                          <p
+                            style={{
+                              margin: 0,
+                              fontSize: "var(--font-size-sm)",
+                              color: "var(--text-primary)",
+                              fontWeight: 500,
+                            }}
+                          >
+                            Viewing Mock Data: 2^(2^(2^(2))) = 65536
+                          </p>
+                          <p
+                            style={{
+                              margin: 0,
+                              fontSize: "var(--font-size-xs)",
+                              color: "var(--text-secondary)",
+                              marginTop: 2,
+                            }}
+                          >
+                            Tetration computation with nested llm_query() calls
+                            and verification.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {mode === "live" && (
+                      <>
+                        <motion.div
+                          className={`modal-tokens ${credentialsCollapsed ? "collapsed" : ""}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          transition={{ duration: 0.2 }}
+                          style={{ marginTop: "var(--space-3)" }}
                         >
-                          <div className="modal-tokens-header-left">
-                            <Key size={14} />
-                            <span>API Credentials</span>
-                            {hasAllRequiredTokens && (
-                              <span className="modal-tokens-configured">
-                                <CheckCircle2 size={12} />
-                                Configured
-                              </span>
-                            )}
-                          </div>
-                          {hasAllRequiredTokens && (
+                          <button
+                            className="modal-tokens-header"
+                            onClick={() =>
+                              setCredentialsCollapsed(!credentialsCollapsed)
+                            }
+                            type="button"
+                          >
+                            <div className="modal-tokens-header-left">
+                              <Key size={14} />
+                              <span>API Credentials</span>
+                              {tokens["GITHUB_TOKEN"] && (
+                                <span className="modal-tokens-configured">
+                                  <CheckCircle2 size={12} />
+                                  Configured
+                                </span>
+                              )}
+                            </div>
                             <span className="modal-tokens-chevron">
                               {credentialsCollapsed ? (
                                 <ChevronDown size={16} />
@@ -895,76 +1364,58 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                                 <ChevronUp size={16} />
                               )}
                             </span>
-                          )}
-                        </button>
+                          </button>
 
-                        <AnimatePresence>
-                          {!credentialsCollapsed && (
-                            <motion.div
-                              className="modal-tokens-content"
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.15 }}
-                            >
-                              <div className="modal-tokens-github-help">
-                                <div className="modal-tokens-github-help-text">
-                                  <Github size={14} />
-                                  <span>
-                                    GitHub PAT required for Copilot SDK
-                                  </span>
-                                </div>
-                                <a
-                                  href="https://github.com/settings/tokens/new?scopes=copilot&description=Copilot%20SDK%20Samples"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="modal-tokens-github-link"
-                                >
-                                  <span>Create token on GitHub</span>
-                                  <ExternalLink size={12} />
-                                </a>
-                                <p className="modal-tokens-github-scopes">
-                                  Required scope: <code>copilot</code>
-                                </p>
-                              </div>
-
-                              <div className="modal-tokens-fields">
-                                {tokenFields.map((field) => (
-                                  <div
-                                    key={field.key}
-                                    className="modal-token-field"
+                          <AnimatePresence>
+                            {!credentialsCollapsed && (
+                              <motion.div
+                                className="modal-tokens-content"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                <div className="modal-tokens-github-help">
+                                  <div className="modal-tokens-github-help-text">
+                                    <Github size={14} />
+                                    <span>
+                                      GitHub PAT required for Copilot SDK
+                                    </span>
+                                  </div>
+                                  <a
+                                    href="https://github.com/settings/tokens/new?scopes=copilot&description=Copilot%20SDK%20RLM%20Demo"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="modal-tokens-github-link"
                                   >
+                                    <span>Create token on GitHub</span>
+                                    <ExternalLink size={12} />
+                                  </a>
+                                  <p className="modal-tokens-github-scopes">
+                                    Required scope: <code>copilot</code>
+                                  </p>
+                                </div>
+
+                                <div className="modal-tokens-fields">
+                                  <div className="modal-token-field">
                                     <div className="modal-token-label-row">
                                       <label className="modal-token-label">
-                                        {field.label}
+                                        GitHub Personal Access Token
                                       </label>
-                                      {field.helpUrl && (
-                                        <a
-                                          href={field.helpUrl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="modal-token-help-link"
-                                        >
-                                          <span>
-                                            {field.helpText || "Get token"}
-                                          </span>
-                                          <ExternalLink size={10} />
-                                        </a>
-                                      )}
                                     </div>
                                     <div className="modal-token-input-wrapper">
                                       <input
                                         type={
-                                          showTokens[field.key]
+                                          showTokens["GITHUB_TOKEN"]
                                             ? "text"
                                             : "password"
                                         }
                                         className="modal-token-input"
-                                        placeholder={field.placeholder}
-                                        value={tokens[field.key] || ""}
+                                        placeholder="ghp_..."
+                                        value={tokens["GITHUB_TOKEN"] || ""}
                                         onChange={(e) =>
                                           handleTokenChange(
-                                            field.key,
+                                            "GITHUB_TOKEN",
                                             e.target.value,
                                           )
                                         }
@@ -973,11 +1424,11 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                                       <button
                                         className="modal-token-toggle"
                                         onClick={() =>
-                                          toggleTokenVisibility(field.key)
+                                          toggleTokenVisibility("GITHUB_TOKEN")
                                         }
                                         type="button"
                                       >
-                                        {showTokens[field.key] ? (
+                                        {showTokens["GITHUB_TOKEN"] ? (
                                           <EyeOff size={14} />
                                         ) : (
                                           <Eye size={14} />
@@ -985,144 +1436,921 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                                       </button>
                                     </div>
                                   </div>
-                                ))}
-                              </div>
-                              <p className="modal-tokens-note">
-                                Tokens are stored in memory only and never
-                                persisted.
-                              </p>
+                                  <div
+                                    style={{
+                                      display: "grid",
+                                      gridTemplateColumns: "1fr 1fr",
+                                      gap: "var(--space-3)",
+                                      marginTop: "var(--space-3)",
+                                    }}
+                                  >
+                                    <div className="modal-token-field">
+                                      <div className="modal-token-label-row">
+                                        <label className="modal-token-label">
+                                          Repository Owner
+                                        </label>
+                                      </div>
+                                      <input
+                                        type="text"
+                                        className="modal-token-input"
+                                        placeholder="e.g., github"
+                                        value={rlmOwner}
+                                        onChange={(e) =>
+                                          setRlmOwner(e.target.value)
+                                        }
+                                        autoComplete="off"
+                                      />
+                                    </div>
+                                    <div className="modal-token-field">
+                                      <div className="modal-token-label-row">
+                                        <label className="modal-token-label">
+                                          Repository Name
+                                        </label>
+                                      </div>
+                                      <input
+                                        type="text"
+                                        className="modal-token-input"
+                                        placeholder="e.g., copilot-sdk-ghaw-samples"
+                                        value={rlmRepo}
+                                        onChange={(e) =>
+                                          setRlmRepo(e.target.value)
+                                        }
+                                        autoComplete="off"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <p className="modal-tokens-note">
+                                  Tokens are stored in memory only and never
+                                  persisted.
+                                </p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "var(--space-3)",
+                            padding: "var(--space-4)",
+                            background: "var(--bg-surface)",
+                            border: "1px solid var(--border-subtle)",
+                            borderRadius: "var(--radius-md)",
+                            marginTop: "var(--space-3)",
+                          }}
+                        >
+                          <div>
+                            <label
+                              style={{
+                                display: "block",
+                                fontSize: "var(--font-size-xs)",
+                                color: "var(--text-muted)",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.5px",
+                                marginBottom: "var(--space-2)",
+                              }}
+                            >
+                              Query
+                            </label>
+                            <textarea
+                              value={rlmQuery}
+                              onChange={(e) => setRlmQuery(e.target.value)}
+                              placeholder="Enter your question for the RLM..."
+                              style={{
+                                width: "100%",
+                                padding: "var(--space-3)",
+                                background: "var(--bg-card)",
+                                border: "1px solid var(--border-default)",
+                                borderRadius: "var(--radius-md)",
+                                color: "var(--text-primary)",
+                                fontSize: "var(--font-size-sm)",
+                                fontFamily: "inherit",
+                                resize: "vertical",
+                                minHeight: 60,
+                              }}
+                              rows={2}
+                            />
+                          </div>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--space-2)",
+                              }}
+                            >
+                              <Wifi
+                                size={14}
+                                style={{
+                                  color: tokens["GITHUB_TOKEN"]
+                                    ? "var(--success)"
+                                    : "var(--warning)",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  fontSize: "var(--font-size-xs)",
+                                  color: tokens["GITHUB_TOKEN"]
+                                    ? "var(--success)"
+                                    : "var(--text-muted)",
+                                }}
+                              >
+                                {tokens["GITHUB_TOKEN"]
+                                  ? "Ready to execute via GitHub Actions"
+                                  : "Enter PAT above to enable live execution"}
+                              </span>
+                            </div>
+
+                            {isRunning ? (
+                              <button
+                                onClick={handleStopDemo}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "var(--space-2)",
+                                  padding: "var(--space-2) var(--space-4)",
+                                  background: "var(--error)",
+                                  border: "none",
+                                  borderRadius: "var(--radius-md)",
+                                  color: "white",
+                                  fontSize: "var(--font-size-sm)",
+                                  fontWeight: 500,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <X size={14} />
+                                Stop
+                              </button>
+                            ) : (
+                              <button
+                                onClick={handleRunRLM}
+                                disabled={
+                                  !tokens["GITHUB_TOKEN"] ||
+                                  !rlmOwner.trim() ||
+                                  !rlmRepo.trim() ||
+                                  !rlmQuery.trim()
+                                }
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "var(--space-2)",
+                                  padding: "var(--space-2) var(--space-4)",
+                                  background:
+                                    tokens["GITHUB_TOKEN"] &&
+                                    rlmOwner.trim() &&
+                                    rlmRepo.trim() &&
+                                    rlmQuery.trim()
+                                      ? "var(--brand-primary)"
+                                      : "var(--bg-hover)",
+                                  border: "none",
+                                  borderRadius: "var(--radius-md)",
+                                  color:
+                                    tokens["GITHUB_TOKEN"] &&
+                                    rlmOwner.trim() &&
+                                    rlmRepo.trim() &&
+                                    rlmQuery.trim()
+                                      ? "white"
+                                      : "var(--text-disabled)",
+                                  fontSize: "var(--font-size-sm)",
+                                  fontWeight: 500,
+                                  cursor:
+                                    tokens["GITHUB_TOKEN"] &&
+                                    rlmOwner.trim() &&
+                                    rlmRepo.trim() &&
+                                    rlmQuery.trim()
+                                      ? "pointer"
+                                      : "not-allowed",
+                                }}
+                              >
+                                <Play size={14} />
+                                Run via GitHub Actions
+                              </button>
+                            )}
+                          </div>
+
+                          {rlmStatus && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--space-2)",
+                                padding: "var(--space-2) var(--space-3)",
+                                background: isRunning
+                                  ? "var(--info-muted)"
+                                  : rlmStatus.toLowerCase().includes("error")
+                                    ? "var(--error-muted)"
+                                    : "var(--success-muted)",
+                                border: `1px solid ${
+                                  isRunning
+                                    ? "rgba(59, 130, 246, 0.2)"
+                                    : rlmStatus.toLowerCase().includes("error")
+                                      ? "rgba(239, 68, 68, 0.2)"
+                                      : "rgba(34, 197, 94, 0.2)"
+                                }`,
+                                borderRadius: "var(--radius-md)",
+                                marginTop: "var(--space-2)",
+                              }}
+                            >
+                              {isRunning && (
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{
+                                    repeat: Infinity,
+                                    duration: 1,
+                                    ease: "linear",
+                                  }}
+                                >
+                                  <Loader2 size={14} />
+                                </motion.div>
+                              )}
+                              <span
+                                style={{
+                                  fontSize: "var(--font-size-xs)",
+                                  color: isRunning
+                                    ? "var(--info)"
+                                    : rlmStatus.toLowerCase().includes("error")
+                                      ? "var(--error)"
+                                      : "var(--success)",
+                                }}
+                              >
+                                {rlmStatus}
+                              </span>
                             </motion.div>
                           )}
-                        </AnimatePresence>
-                      </motion.div>
+                        </motion.div>
+                      </>
                     )}
-                  </AnimatePresence>
-
-                  {hasBothTypes && (
-                    <div className="modal-type-toggle">
-                      <button
-                        className={`modal-type-button ${demoType === "sdk" ? "active" : ""}`}
-                        onClick={() => setDemoType("sdk")}
-                      >
-                        <Code2 size={14} />
-                        SDK
-                      </button>
-                      <button
-                        className={`modal-type-button ${demoType === "ghaw" ? "active" : ""}`}
-                        onClick={() => setDemoType("ghaw")}
-                      >
-                        <Terminal size={14} />
-                        gh-aw
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="modal-command-section">
-                    <div className="modal-command-label">
-                      <Terminal size={14} />
-                      <span>Command</span>
-                      <span className="modal-command-editable-hint">
-                        <Pencil size={10} />
-                        editable
-                      </span>
-                    </div>
-                    <div className="modal-command">
-                      <textarea
-                        className="modal-command-input"
-                        value={command}
-                        onChange={(e) => setCommand(e.target.value)}
-                        spellCheck={false}
-                        rows={1}
-                      />
-                      <div className="modal-command-actions">
-                        <button
-                          className={`modal-command-copy ${copied ? "copied" : ""}`}
-                          onClick={handleCopyCommand}
-                        >
-                          {copied ? (
-                            <>
-                              <CheckCircle2 size={14} />
-                              Copied
-                            </>
-                          ) : (
-                            "Copy"
-                          )}
-                        </button>
-                        {isRunning ? (
-                          <button
-                            className="modal-stop-button"
-                            onClick={handleStopDemo}
-                          >
-                            <X size={14} />
-                            Stop
-                          </button>
-                        ) : (
-                          <button
-                            className={`modal-run-button ${isRunning ? "running" : ""}`}
-                            onClick={handleRunDemo}
-                            disabled={isRunning}
-                          >
-                            <Play size={14} />
-                            Run {mode === "live" ? "Live" : "Demo"}
-                          </button>
-                        )}
-                      </div>
-                    </div>
                   </div>
 
-                  <AnimatePresence>
-                    {showOutput && (
-                      <motion.div
-                        className="modal-output"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="modal-output-header">
-                          <span className="modal-output-title">
-                            <Terminal size={14} />
-                            Output
-                            {mode === "live" && serverAvailable && (
-                              <Badge variant="connector">LIVE</Badge>
-                            )}
-                          </span>
-                          {isRunning && (
-                            <span className="modal-output-status">
-                              <span className="pulse-dot" />
-                              Running
-                            </span>
-                          )}
-                        </div>
-                        <div className="modal-output-content" ref={outputRef}>
-                          {output.map((line, index) => (
-                            <motion.div
-                              key={index}
-                              className="modal-output-line"
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.15 }}
-                            >
-                              {line || "\u00A0"}
-                            </motion.div>
-                          ))}
-                          {isRunning && (
-                            <span className="modal-output-cursor">▋</span>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div style={{ marginTop: "var(--space-4)" }}>
+                    <RLMViewer execution={rlmExecution} />
+                  </div>
                 </div>
-              </div>
+              ) : demo.id === "skill-testing" ? (
+                <div className="modal-section">
+                  <h3 className="modal-section-title">
+                    <Terminal size={18} />
+                    Run Demo
+                  </h3>
+                  <div className="modal-run-section">
+                    <div className="modal-mode-toggle">
+                      <button
+                        className={`modal-mode-button ${mode === "mock" ? "active" : ""}`}
+                        onClick={() => setMode("mock")}
+                      >
+                        <Cpu size={14} />
+                        Mock Data
+                      </button>
+                      <button
+                        className={`modal-mode-button ${mode === "live" ? "active" : ""}`}
+                        onClick={() => setMode("live")}
+                        disabled={!serverAvailable}
+                        title={
+                          serverAvailable === false
+                            ? "API server not running. Start with: pnpm server"
+                            : undefined
+                        }
+                      >
+                        <Server size={14} />
+                        Live API
+                        {serverAvailable === false && (
+                          <span className="mode-badge-offline">Offline</span>
+                        )}
+                        {serverAvailable && (
+                          <span className="mode-badge-online">Ready</span>
+                        )}
+                      </button>
+                    </div>
 
-              <div className="modal-section">
-                <h3 className="modal-section-title">
-                  <Zap size={18} />
-                  Architecture
-                </h3>
-                <div className="modal-mermaid" ref={mermaidRef} />
-              </div>
+                    <AnimatePresence>
+                      {mode === "live" && (
+                        <motion.div
+                          className={`modal-tokens ${credentialsCollapsed ? "collapsed" : ""}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <button
+                            className="modal-tokens-header"
+                            onClick={() =>
+                              setCredentialsCollapsed(!credentialsCollapsed)
+                            }
+                            type="button"
+                          >
+                            <div className="modal-tokens-header-left">
+                              <Key size={14} />
+                              <span>API Credentials</span>
+                              {tokens["GITHUB_TOKEN"] && (
+                                <span className="modal-tokens-configured">
+                                  <CheckCircle2 size={12} />
+                                  Configured
+                                </span>
+                              )}
+                            </div>
+                            <span className="modal-tokens-chevron">
+                              {credentialsCollapsed ? (
+                                <ChevronDown size={16} />
+                              ) : (
+                                <ChevronUp size={16} />
+                              )}
+                            </span>
+                          </button>
+
+                          <AnimatePresence>
+                            {!credentialsCollapsed && (
+                              <motion.div
+                                className="modal-tokens-content"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                <div className="modal-tokens-github-help">
+                                  <div className="modal-tokens-github-help-text">
+                                    <Github size={14} />
+                                    <span>
+                                      GitHub PAT required for Copilot SDK
+                                    </span>
+                                  </div>
+                                  <a
+                                    href="https://github.com/settings/tokens/new?scopes=copilot&description=Copilot%20SDK%20Skill%20Testing"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="modal-tokens-github-link"
+                                  >
+                                    <span>Create token on GitHub</span>
+                                    <ExternalLink size={12} />
+                                  </a>
+                                  <p className="modal-tokens-github-scopes">
+                                    Required scope: <code>copilot</code>
+                                  </p>
+                                </div>
+
+                                <div className="modal-tokens-fields">
+                                  <div className="modal-token-field">
+                                    <div className="modal-token-label-row">
+                                      <label className="modal-token-label">
+                                        GitHub Personal Access Token
+                                      </label>
+                                    </div>
+                                    <div className="modal-token-input-wrapper">
+                                      <input
+                                        type={
+                                          showTokens["GITHUB_TOKEN"]
+                                            ? "text"
+                                            : "password"
+                                        }
+                                        className="modal-token-input"
+                                        placeholder="ghp_..."
+                                        value={tokens["GITHUB_TOKEN"] || ""}
+                                        onChange={(e) =>
+                                          handleTokenChange(
+                                            "GITHUB_TOKEN",
+                                            e.target.value,
+                                          )
+                                        }
+                                        autoComplete="off"
+                                      />
+                                      <button
+                                        className="modal-token-toggle"
+                                        onClick={() =>
+                                          toggleTokenVisibility("GITHUB_TOKEN")
+                                        }
+                                        type="button"
+                                      >
+                                        {showTokens["GITHUB_TOKEN"] ? (
+                                          <EyeOff size={14} />
+                                        ) : (
+                                          <Eye size={14} />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <p className="modal-tokens-note">
+                                  Tokens are stored locally and never sent to
+                                  our servers.
+                                </p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {paramFields.length > 0 && (
+                      <div className="modal-params">
+                        <div className="modal-params-header">
+                          <Settings2 size={14} />
+                          <span>Sample Parameters</span>
+                        </div>
+                        <div className="modal-params-grid">
+                          {paramFields.map((param: SampleParam) => (
+                            <div key={param.key} className="modal-param-field">
+                              <label className="modal-param-label">
+                                {param.label}
+                              </label>
+                              {param.type === "select" && param.options ? (
+                                <select
+                                  className="modal-param-select"
+                                  value={
+                                    sampleParams[param.key] ||
+                                    param.defaultValue
+                                  }
+                                  onChange={(e) =>
+                                    setSampleParams((prev) => ({
+                                      ...prev,
+                                      [param.key]: e.target.value,
+                                    }))
+                                  }
+                                >
+                                  {param.options.map(
+                                    (opt: { value: string; label: string }) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ),
+                                  )}
+                                </select>
+                              ) : (
+                                <input
+                                  type="text"
+                                  className="modal-param-input"
+                                  placeholder={param.placeholder}
+                                  value={
+                                    sampleParams[param.key] ||
+                                    param.defaultValue
+                                  }
+                                  onChange={(e) =>
+                                    setSampleParams((prev) => ({
+                                      ...prev,
+                                      [param.key]: e.target.value,
+                                    }))
+                                  }
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ marginTop: "var(--space-4)" }}>
+                    <SkillTestingViewer execution={skillTestingMockData} />
+                  </div>
+                </div>
+              ) : (
+                <div className="modal-section">
+                  <h3 className="modal-section-title">
+                    <Terminal size={18} />
+                    Run Demo
+                  </h3>
+                  <div className="modal-run-section">
+                    <div className="modal-mode-toggle">
+                      <button
+                        className={`modal-mode-button ${mode === "mock" ? "active" : ""}`}
+                        onClick={() => setMode("mock")}
+                      >
+                        <Cpu size={14} />
+                        Mock Data
+                      </button>
+                      <button
+                        className={`modal-mode-button ${mode === "live" ? "active" : ""}`}
+                        onClick={() => setMode("live")}
+                        disabled={!serverAvailable}
+                        title={
+                          serverAvailable === false
+                            ? "API server not running. Start with: pnpm server"
+                            : undefined
+                        }
+                      >
+                        <Server size={14} />
+                        Live API
+                        {serverAvailable === false && (
+                          <span className="mode-badge-offline">Offline</span>
+                        )}
+                        {serverAvailable && (
+                          <span className="mode-badge-online">Ready</span>
+                        )}
+                      </button>
+                    </div>
+
+                    <AnimatePresence>
+                      {mode === "live" && hasTokenFields && (
+                        <motion.div
+                          className={`modal-tokens ${credentialsCollapsed ? "collapsed" : ""}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <button
+                            className="modal-tokens-header"
+                            onClick={() =>
+                              hasAllRequiredTokens &&
+                              setCredentialsCollapsed(!credentialsCollapsed)
+                            }
+                            type="button"
+                          >
+                            <div className="modal-tokens-header-left">
+                              <Key size={14} />
+                              <span>API Credentials</span>
+                              {hasAllRequiredTokens && (
+                                <span className="modal-tokens-configured">
+                                  <CheckCircle2 size={12} />
+                                  Configured
+                                </span>
+                              )}
+                            </div>
+                            {hasAllRequiredTokens && (
+                              <span className="modal-tokens-chevron">
+                                {credentialsCollapsed ? (
+                                  <ChevronDown size={16} />
+                                ) : (
+                                  <ChevronUp size={16} />
+                                )}
+                              </span>
+                            )}
+                          </button>
+
+                          <AnimatePresence>
+                            {!credentialsCollapsed && (
+                              <motion.div
+                                className="modal-tokens-content"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                <div className="modal-tokens-github-help">
+                                  <div className="modal-tokens-github-help-text">
+                                    <Github size={14} />
+                                    <span>
+                                      GitHub PAT required for Copilot SDK
+                                    </span>
+                                  </div>
+                                  <a
+                                    href="https://github.com/settings/tokens/new?scopes=copilot&description=Copilot%20SDK%20Samples"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="modal-tokens-github-link"
+                                  >
+                                    <span>Create token on GitHub</span>
+                                    <ExternalLink size={12} />
+                                  </a>
+                                  <p className="modal-tokens-github-scopes">
+                                    Required scope: <code>copilot</code>
+                                  </p>
+                                </div>
+
+                                <div className="modal-tokens-fields">
+                                  {tokenFields.map((field) => (
+                                    <div
+                                      key={field.key}
+                                      className="modal-token-field"
+                                    >
+                                      <div className="modal-token-label-row">
+                                        <label className="modal-token-label">
+                                          {field.label}
+                                        </label>
+                                        {field.helpUrl && (
+                                          <a
+                                            href={field.helpUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="modal-token-help-link"
+                                          >
+                                            <span>
+                                              {field.helpText || "Get token"}
+                                            </span>
+                                            <ExternalLink size={10} />
+                                          </a>
+                                        )}
+                                      </div>
+                                      <div className="modal-token-input-wrapper">
+                                        <input
+                                          type={
+                                            showTokens[field.key]
+                                              ? "text"
+                                              : "password"
+                                          }
+                                          className="modal-token-input"
+                                          placeholder={field.placeholder}
+                                          value={tokens[field.key] || ""}
+                                          onChange={(e) =>
+                                            handleTokenChange(
+                                              field.key,
+                                              e.target.value,
+                                            )
+                                          }
+                                          autoComplete="off"
+                                        />
+                                        <button
+                                          className="modal-token-toggle"
+                                          onClick={() =>
+                                            toggleTokenVisibility(field.key)
+                                          }
+                                          type="button"
+                                        >
+                                          {showTokens[field.key] ? (
+                                            <EyeOff size={14} />
+                                          ) : (
+                                            <Eye size={14} />
+                                          )}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="modal-tokens-note">
+                                  Tokens are stored in memory only and never
+                                  persisted.
+                                </p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {hasBothTypes && (
+                      <div className="modal-type-toggle">
+                        <button
+                          className={`modal-type-button ${demoType === "sdk" ? "active" : ""}`}
+                          onClick={() => setDemoType("sdk")}
+                        >
+                          <Code2 size={14} />
+                          SDK
+                        </button>
+                        <button
+                          className={`modal-type-button ${demoType === "ghaw" ? "active" : ""}`}
+                          onClick={() => setDemoType("ghaw")}
+                        >
+                          <Terminal size={14} />
+                          gh-aw
+                        </button>
+                      </div>
+                    )}
+
+                    <AnimatePresence>
+                      {mode === "live" && hasParamFields && (
+                        <motion.div
+                          className={`modal-params ${paramsCollapsed ? "collapsed" : ""}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <button
+                            className="modal-params-header"
+                            onClick={() => setParamsCollapsed(!paramsCollapsed)}
+                            type="button"
+                          >
+                            <div className="modal-params-header-left">
+                              <Settings2 size={14} />
+                              <span>Sample Parameters</span>
+                            </div>
+                            <span className="modal-params-chevron">
+                              {paramsCollapsed ? (
+                                <ChevronDown size={16} />
+                              ) : (
+                                <ChevronUp size={16} />
+                              )}
+                            </span>
+                          </button>
+
+                          <AnimatePresence>
+                            {!paramsCollapsed && (
+                              <motion.div
+                                className="modal-params-content"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                <div className="modal-params-fields">
+                                  {paramFields.map((field) => (
+                                    <div
+                                      key={field.key}
+                                      className="modal-param-field"
+                                    >
+                                      <label className="modal-param-label">
+                                        {field.label}
+                                      </label>
+                                      {field.type === "select" &&
+                                      field.options ? (
+                                        <div className="modal-param-dropdown">
+                                          <button
+                                            type="button"
+                                            className="modal-param-dropdown-trigger"
+                                            onClick={() =>
+                                              setOpenDropdown(
+                                                openDropdown === field.key
+                                                  ? null
+                                                  : field.key,
+                                              )
+                                            }
+                                          >
+                                            <span>
+                                              {field.options.find(
+                                                (opt) =>
+                                                  opt.value ===
+                                                  (sampleParams[field.key] ||
+                                                    field.defaultValue),
+                                              )?.label || field.placeholder}
+                                            </span>
+                                            <ChevronDown
+                                              size={14}
+                                              className={`modal-param-dropdown-icon ${openDropdown === field.key ? "open" : ""}`}
+                                            />
+                                          </button>
+                                          <AnimatePresence>
+                                            {openDropdown === field.key && (
+                                              <motion.div
+                                                className="modal-param-dropdown-menu"
+                                                initial={{ opacity: 0, y: -8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -8 }}
+                                                transition={{ duration: 0.15 }}
+                                              >
+                                                {field.options.map((opt) => (
+                                                  <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    className={`modal-param-dropdown-item ${(sampleParams[field.key] || field.defaultValue) === opt.value ? "selected" : ""}`}
+                                                    onClick={() => {
+                                                      handleParamChange(
+                                                        field.key,
+                                                        opt.value,
+                                                      );
+                                                      setOpenDropdown(null);
+                                                    }}
+                                                  >
+                                                    {opt.label}
+                                                    {(sampleParams[field.key] ||
+                                                      field.defaultValue) ===
+                                                      opt.value && (
+                                                      <CheckCircle2 size={14} />
+                                                    )}
+                                                  </button>
+                                                ))}
+                                              </motion.div>
+                                            )}
+                                          </AnimatePresence>
+                                        </div>
+                                      ) : field.type === "textarea" ? (
+                                        <textarea
+                                          className="modal-param-textarea"
+                                          placeholder={field.placeholder}
+                                          value={sampleParams[field.key] || ""}
+                                          onChange={(e) =>
+                                            handleParamChange(
+                                              field.key,
+                                              e.target.value,
+                                            )
+                                          }
+                                          rows={3}
+                                        />
+                                      ) : (
+                                        <input
+                                          type="text"
+                                          className="modal-param-input"
+                                          placeholder={field.placeholder}
+                                          value={sampleParams[field.key] || ""}
+                                          onChange={(e) =>
+                                            handleParamChange(
+                                              field.key,
+                                              e.target.value,
+                                            )
+                                          }
+                                        />
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="modal-command-section">
+                      <div className="modal-command-label">
+                        <Terminal size={14} />
+                        <span>Command</span>
+                      </div>
+                      <div className="modal-command">
+                        <code className="modal-command-text">{command}</code>
+                        <div className="modal-command-actions">
+                          <button
+                            className={`modal-command-copy ${copied ? "copied" : ""}`}
+                            onClick={handleCopyCommand}
+                          >
+                            {copied ? (
+                              <>
+                                <CheckCircle2 size={14} />
+                                Copied
+                              </>
+                            ) : (
+                              "Copy"
+                            )}
+                          </button>
+                          {isRunning ? (
+                            <button
+                              className="modal-stop-button"
+                              onClick={handleStopDemo}
+                            >
+                              <X size={14} />
+                              Stop
+                            </button>
+                          ) : (
+                            <button
+                              className={`modal-run-button ${isRunning ? "running" : ""}`}
+                              onClick={handleRunDemo}
+                              disabled={isRunning}
+                            >
+                              <Play size={14} />
+                              Run {mode === "live" ? "Live" : "Demo"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {showOutput && (
+                        <motion.div
+                          className="modal-output"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="modal-output-header">
+                            <span className="modal-output-title">
+                              <Terminal size={14} />
+                              Output
+                              {mode === "live" && serverAvailable && (
+                                <Badge variant="connector">LIVE</Badge>
+                              )}
+                            </span>
+                            {isRunning && (
+                              <span className="modal-output-status">
+                                <span className="pulse-dot" />
+                                Running
+                              </span>
+                            )}
+                          </div>
+                          <div className="modal-output-content" ref={outputRef}>
+                            {output.map((line, index) => (
+                              <motion.div
+                                key={index}
+                                className="modal-output-line"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                {line || "\u00A0"}
+                              </motion.div>
+                            ))}
+                            {isRunning && (
+                              <span className="modal-output-cursor">▋</span>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              )}
+
+              {demo.id !== "rlm-orchestration" &&
+                demo.id !== "skill-testing" && (
+                  <div className="modal-section">
+                    <h3 className="modal-section-title">
+                      <Zap size={18} />
+                      Architecture
+                    </h3>
+                    <div className="modal-mermaid" ref={mermaidRef} />
+                  </div>
+                )}
 
               <div className="modal-section">
                 <h3 className="modal-section-title">

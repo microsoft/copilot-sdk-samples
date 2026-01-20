@@ -24,6 +24,7 @@
     "shared/**/*.ts",
     "test/**/*.ts",
     "scripts/**/*.ts",
+    "server/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": ["node_modules", "dist"]

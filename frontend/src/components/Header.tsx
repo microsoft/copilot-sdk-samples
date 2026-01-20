@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
       </nav>
 
       <a
-        href="https://github.com/github/copilot-sdk-samples"
+        href="https://github.com/microsoft-foundry/copilot-sdk-samples"
         target="_blank"
         rel="noopener noreferrer"
         className="header-github-link"

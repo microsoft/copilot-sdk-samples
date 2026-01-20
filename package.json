@@ -19,6 +19,8 @@
     "snyk": "tsx samples/snyk/sdk/index.ts",
     "slack": "tsx samples/slack/sdk/index.ts",
     "teams": "tsx samples/teams/sdk/index.ts",
+    "skill-testing": "tsx samples/skill-testing/sdk/index.ts",
+    "rlm-orchestration": "tsx samples/rlm-orchestration/sdk/index.ts",
     "server": "tsx server/index.ts",
     "dev": "concurrently \"tsx watch server/index.ts\" \"pnpm frontend\"",
     "lint": "eslint .",
@@ -27,7 +29,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
   },
   "keywords": [
     "copilot",
@@ -38,6 +41,7 @@
   "license": "MIT",
   "dependencies": {
     "@github/copilot-sdk": "^0.1.0",
+    "@octokit/rest": "^22.0.1",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "framer-motion": "^12.27.0",
@@ -50,6 +54,8 @@
     "@vitest/coverage-v8": "^4.0.17",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.8.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.0",
@@ -58,5 +64,14 @@
   },
   "engines": {
     "node": ">=18.18.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

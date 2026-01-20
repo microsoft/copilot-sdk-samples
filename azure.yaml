@@ -9,12 +9,26 @@ workflows:
       - azd: deploy
 
 services:
-  samples:
+  # Backend API server - runs Express on port 3001
+  api:
     project: .
     language: ts
     host: containerapp
     docker:
-      path: ./Dockerfile
+      path: ./Dockerfile.api
       context: .
       target: production
       remoteBuild: true
+
+  # Frontend React app - served via nginx on port 80
+  web:
+    project: ./frontend
+    language: ts
+    host: containerapp
+    docker:
+      path: ./Dockerfile.frontend
+      context: ..
+      target: production
+      remoteBuild: true
+      buildArgs:
+        VITE_API_URL: ${SERVICE_API_URI}

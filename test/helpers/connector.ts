@@ -68,9 +68,13 @@ export async function withTimeout<T>(
 }
 
 export interface SpyConnector {
-  initialize: ReturnType<typeof vi.fn>;
-  dispose: ReturnType<typeof vi.fn>;
-  healthCheck: ReturnType<typeof vi.fn>;
+  initialize: ReturnType<typeof vi.fn<() => Promise<ConnectorResult<void>>>>;
+  dispose: ReturnType<typeof vi.fn<() => Promise<void>>>;
+  healthCheck: ReturnType<
+    typeof vi.fn<
+      () => Promise<ConnectorResult<{ healthy: boolean; version: string }>>
+    >
+  >;
 }
 
 export function createSpyConnector(): SpyConnector {

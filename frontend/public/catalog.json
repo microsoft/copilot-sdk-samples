@@ -4,6 +4,46 @@
   "repositoryUrl": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples",
   "demos": [
     {
+      "id": "rlm-orchestration",
+      "name": "RLM Orchestration",
+      "description": "Execute recursive LLM patterns with code execution in cloud environments. Demonstrates how an LLM can decompose complex tasks, execute code in Azure Container Apps or GitHub Actions, and recursively call itself via llm_query(). Perfect for building sophisticated AI agents that can reason, code, and iterate.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/rlm-orchestration/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["aca-sessions", "github-actions"],
+      "audience": "AI Engineers, Platform Teams",
+      "timeToValue": "2 hours",
+      "featured": true
+    },
+    {
+      "id": "skill-testing",
+      "name": "Skill Testing",
+      "description": "Test Agent Skills against acceptance criteria using the Copilot SDK. Demonstrates how to load SKILL.md files, run skills against tasks, and evaluate generated code against predefined criteria. Essential for teams building and validating AI agent capabilities.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/skill-testing/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["mslearn-mcp"],
+      "audience": "AI Engineers, Platform Teams",
+      "timeToValue": "2 hours",
+      "featured": true
+    },
+    {
       "id": "hello-world",
       "name": "Hello World",
       "description": "Get started in minutes with this foundational sample. Perfect for developers new to the Copilot SDK, demonstrating core concepts like client initialization, agent communication, and response handling. Ideal first step before building production integrations.",
@@ -249,6 +289,36 @@
       "paths": {
         "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts",
         "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts"
+      }
+    },
+    {
+      "id": "mslearn-mcp",
+      "name": "Microsoft Learn MCP",
+      "description": "Microsoft Learn documentation MCP server client",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts"
+      }
+    },
+    {
+      "id": "aca-sessions",
+      "name": "Azure Container Apps Sessions",
+      "description": "Dynamic code execution via Azure Container Apps Dynamic Sessions",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/aca-sessions/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/aca-sessions/client.ts"
+      }
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "description": "Workflow dispatch and code execution via GitHub Actions",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github-actions/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github-actions/client.ts"
       }
     }
   ],

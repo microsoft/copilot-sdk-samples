@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "connectorMode": {
+      "value": "${CONNECTOR_MODE=mock}"
+    },
+    "logLevel": {
+      "value": "${LOG_LEVEL=info}"
+    },
+    "copilotGithubToken": {
+      "value": "${COPILOT_GITHUB_TOKEN}"
+    },
+    "githubToken": {
+      "value": "${GITHUB_TOKEN}"
+    },
+    "githubOwner": {
+      "value": "${GITHUB_OWNER}"
+    },
+    "githubRepo": {
+      "value": "${GITHUB_REPO}"
+    },
+    "atlassianEmail": {
+      "value": "${ATLASSIAN_EMAIL}"
+    },
+    "atlassianApiToken": {
+      "value": "${ATLASSIAN_API_TOKEN}"
+    },
+    "atlassianDomain": {
+      "value": "${ATLASSIAN_DOMAIN}"
+    },
+    "pagerdutyApiKey": {
+      "value": "${PAGERDUTY_API_KEY}"
+    },
+    "datadogApiKey": {
+      "value": "${DATADOG_API_KEY}"
+    },
+    "datadogAppKey": {
+      "value": "${DATADOG_APP_KEY}"
+    },
+    "datadogSite": {
+      "value": "${DATADOG_SITE=datadoghq.com}"
+    },
+    "snykApiToken": {
+      "value": "${SNYK_API_TOKEN}"
+    },
+    "snykOrgId": {
+      "value": "${SNYK_ORG_ID}"
+    },
+    "slackBotToken": {
+      "value": "${SLACK_BOT_TOKEN}"
+    },
+    "slackSigningSecret": {
+      "value": "${SLACK_SIGNING_SECRET}"
+    }
+  }
+}

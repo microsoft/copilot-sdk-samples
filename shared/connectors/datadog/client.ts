@@ -1273,7 +1273,7 @@ class MockDatadogConnector implements DatadogConnector {
 
   async muteHost(
     hostname: string,
-    options?: { message?: string; endTimestamp?: number },
+    _options?: { message?: string; endTimestamp?: number },
   ): Promise<ConnectorResult<void>> {
     if (!this._isInitialized) {
       return failure({

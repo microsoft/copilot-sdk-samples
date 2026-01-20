@@ -178,6 +178,25 @@
       "audience": "Enterprise Developers, IT Teams",
       "timeToValue": "3 hours",
       "featured": true
+    },
+    {
+      "id": "skill-testing",
+      "name": "Skill Testing",
+      "description": "Test Agent Skills against acceptance criteria using the Copilot SDK. Demonstrates how to load SKILL.md files, run skills against tasks, and evaluate generated code against predefined criteria. Essential for teams building and validating AI agent capabilities.",
+      "tier": "mandatory",
+      "status": "implemented",
+      "type": "sdk",
+      "features": {
+        "sdk": true,
+        "ghaw": false
+      },
+      "paths": {
+        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/skill-testing/sdk"
+      },
+      "dependencies": [],
+      "connectors": ["mslearn-mcp"],
+      "audience": "AI Engineers, Platform Teams",
+      "timeToValue": "2 hours"
     }
   ],
   "connectors": [
@@ -249,6 +268,16 @@
       "paths": {
         "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts",
         "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts"
+      }
+    },
+    {
+      "id": "mslearn-mcp",
+      "name": "Microsoft Learn MCP",
+      "description": "Microsoft Learn documentation MCP server client",
+      "status": "implemented",
+      "paths": {
+        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts",
+        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts"
       }
     }
   ],

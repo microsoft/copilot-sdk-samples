@@ -13,13 +13,13 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   --text-disabled: #52525b;
-  --text-link: #a78bfa;
+  --text-link: #9a8fc4;
 
-  --brand-primary: #7c3aed;
-  --brand-hover: #8b5cf6;
-  --brand-light: #a78bfa;
-  --brand-muted: rgba(124, 58, 237, 0.15);
-  --brand-glow: rgba(124, 58, 237, 0.25);
+  --brand-primary: #6d5acd;
+  --brand-hover: #7b6bd8;
+  --brand-light: #9a8fc4;
+  --brand-muted: rgba(109, 90, 205, 0.1);
+  --brand-glow: rgba(109, 90, 205, 0.15);
 
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-default: rgba(255, 255, 255, 0.08);
@@ -37,10 +37,10 @@
 
   --color-sdk-blue: #3b82f6;
   --color-sdk-blue-muted: rgba(59, 130, 246, 0.12);
-  --color-ghaw-purple: #a855f7;
-  --color-ghaw-purple-muted: rgba(168, 85, 247, 0.12);
-  --color-both: #8b5cf6;
-  --color-both-muted: rgba(139, 92, 246, 0.12);
+  --color-ghaw-purple: #9d7cd8;
+  --color-ghaw-purple-muted: rgba(157, 124, 216, 0.1);
+  --color-both: #8077c9;
+  --color-both-muted: rgba(128, 119, 201, 0.1);
 
   --color-teams: #6366f1;
   --color-teams-glow: rgba(99, 102, 241, 0.3);
@@ -900,11 +900,15 @@ code {
   background: var(--bg-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
-  max-width: 720px;
-  width: 100%;
+  max-width: 900px;
+  width: 95vw;
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.modal-panel-wide {
+  max-width: 1400px;
 }
 
 .modal-header {
@@ -978,19 +982,6 @@ code {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-}
-
-.modal-command-text {
-  flex: 1;
-  overflow-x: auto;
-  min-width: 120px;
-  color: var(--text-primary);
-}
-
-.modal-command-actions {
-  display: flex;
-  gap: var(--space-2);
-  flex-shrink: 0;
 }
 
 .modal-command-copy {
@@ -1314,44 +1305,29 @@ code {
   color: var(--text-muted);
 }
 
-.modal-command-editable-hint {
-  display: inline-flex;
+.modal-command {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: var(--font-size-xs);
-  color: var(--text-disabled);
-  margin-left: auto;
-}
-
-.modal-command-input {
-  flex: 1;
-  min-width: 200px;
-  padding: var(--space-3);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   background: var(--bg-page);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+}
+
+.modal-command-text {
+  flex: 1;
+  overflow-x: auto;
+  min-width: 120px;
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  resize: none;
-  line-height: 1.5;
-  field-sizing: content;
 }
 
-.modal-command-input:focus {
-  outline: none;
-  border-color: var(--brand-primary);
-  background: var(--bg-surface);
-}
-
-.modal-command-input::placeholder {
-  color: var(--text-disabled);
-}
-
-.modal-command {
+.modal-command-actions {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .modal-tokens {
@@ -1555,6 +1531,178 @@ code {
   padding: 1px 4px;
   border-radius: 3px;
   color: var(--text-secondary);
+}
+
+/* Sample Parameters */
+.modal-params {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.modal-params.collapsed {
+  padding: 0;
+}
+
+.modal-params-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.modal-params:not(.collapsed) .modal-params-header {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-params-header:hover {
+  background: var(--bg-hover);
+}
+
+.modal-params-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.modal-params-chevron {
+  color: var(--text-muted);
+}
+
+.modal-params-content {
+  padding: var(--space-4);
+}
+
+.modal-params-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.modal-param-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.modal-param-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.modal-param-input,
+.modal-param-textarea {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.modal-param-input:focus,
+.modal-param-textarea:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.modal-param-input::placeholder,
+.modal-param-textarea::placeholder {
+  color: var(--text-disabled);
+}
+
+.modal-param-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.modal-param-dropdown {
+  position: relative;
+}
+
+.modal-param-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.modal-param-dropdown-trigger:hover {
+  border-color: var(--border-strong);
+}
+
+.modal-param-dropdown-trigger:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.modal-param-dropdown-icon {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modal-param-dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.modal-param-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.modal-param-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-align: left;
+}
+
+.modal-param-dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-param-dropdown-item.selected {
+  color: var(--brand-primary);
+}
+
+.modal-param-dropdown-item.selected:hover {
+  background: var(--bg-hover);
 }
 
 .modal-stop-button {

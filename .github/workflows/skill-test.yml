@@ -1,0 +1,54 @@
+name: Skill Testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      skill_name:
+        description: "Skill to test"
+        required: true
+        default: "mcp-builder"
+        type: string
+      test_mode:
+        description: "Test mode"
+        required: true
+        default: "mock"
+        type: choice
+        options:
+          - mock
+          - live
+
+jobs:
+  test-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run skill test
+        env:
+          SKILL_NAME: ${{ inputs.skill_name }}
+          TEST_MODE: ${{ inputs.test_mode }}
+          VERBOSE: "true"
+        run: pnpm skill-testing
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-test-results
+          path: |
+            test-results/
+          retention-days: 7

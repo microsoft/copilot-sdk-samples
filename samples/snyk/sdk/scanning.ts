@@ -413,7 +413,13 @@ export class ScanningService {
     type: string,
   ): Promise<ConnectorResult<ProjectSummary[]>> {
     const result = await this.connector.listProjects({
-      type: type as any,
+      type: type as
+        | "npm"
+        | "maven"
+        | "pip"
+        | "gomodules"
+        | "dockerfile"
+        | "terraformconfig",
     });
 
     if (!result.success) {

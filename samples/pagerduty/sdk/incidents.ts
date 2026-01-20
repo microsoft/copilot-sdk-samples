@@ -2,9 +2,7 @@ import { CopilotClient } from "@github/copilot-sdk";
 import {
   PagerDutyConnector,
   PagerDutyIncident,
-  PagerDutyService,
   PagerDutyUser,
-  PagerDutyOnCall,
   IncidentStatus,
   IncidentUrgency,
 } from "../../../shared/connectors/pagerduty/client.js";
@@ -216,7 +214,6 @@ export class IncidentManagementService {
       const nextEscalation: PagerDutyUser[] = [];
 
       if (policy.escalationRules.length > 0) {
-        const firstRule = policy.escalationRules[0];
         const onCallResult = await this.connector.getCurrentOnCall(policy.id);
         if (onCallResult.success) {
           currentOnCall.push(...onCallResult.data!);

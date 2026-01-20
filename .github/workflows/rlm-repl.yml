@@ -1,0 +1,74 @@
+name: RLM REPL Executor
+
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: "Query to execute via RLM"
+        required: true
+        type: string
+      language:
+        description: "Programming language for code execution"
+        required: false
+        default: "python"
+        type: string
+      timeout:
+        description: "Execution timeout in seconds"
+        required: false
+        default: "60"
+        type: string
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Python
+        if: inputs.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Execute RLM query
+        id: rlm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RLM_QUERY: ${{ inputs.query }}
+          RLM_LANGUAGE: ${{ inputs.language }}
+          RLM_TIMEOUT: ${{ inputs.timeout }}
+        run: |
+          mkdir -p output
+          pnpm rlm-orchestration 2>&1 | tee output/execution.log
+          echo "execution_complete=true" >> $GITHUB_OUTPUT
+
+      - name: Upload execution output
+        uses: actions/upload-artifact@v4
+        with:
+          name: rlm-output
+          path: output/
+          retention-days: 7
+
+      - name: Upload execution log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-log
+          path: output/execution.log
+          retention-days: 7

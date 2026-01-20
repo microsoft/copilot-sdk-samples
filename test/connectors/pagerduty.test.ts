@@ -3,7 +3,6 @@ import {
   createPagerDutyConnector,
   type PagerDutyConnector,
   type PagerDutyIncident,
-  type PagerDutyService,
   type IncidentStatus,
   type IncidentUrgency,
   type IncidentSeverity,

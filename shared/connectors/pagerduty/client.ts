@@ -1402,9 +1402,6 @@ class MockPagerDutyConnector implements PagerDutyConnector {
       });
     }
 
-    const now = new Date();
-    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
     // Generate on-call entries from schedules
     const onCalls: PagerDutyOnCall[] = [];
 
@@ -1516,7 +1513,7 @@ class MockPagerDutyConnector implements PagerDutyConnector {
 
   async getSchedule(
     scheduleId: string,
-    options?: { since?: string; until?: string },
+    _options?: { since?: string; until?: string },
   ): Promise<ConnectorResult<PagerDutySchedule>> {
     if (!this._isInitialized) {
       return failure({
