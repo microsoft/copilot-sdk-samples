@@ -214,9 +214,6 @@ function parseYamlFrontmatter(yaml: string): ConnectorResult<SkillMetadata> {
     // Skip empty lines
     if (line.trim() === "") continue;
 
-    // Check for nested object continuation
-    const indent = line.search(/\S/);
-
     // Key-value line
     const kvMatch = line.match(/^(\s*)([a-zA-Z_-]+):\s*(.*)$/);
     if (kvMatch) {

@@ -83,8 +83,6 @@ export class SkillTestHarness {
     skill: ParsedSkill,
     testCase: SkillTestCase,
   ): Promise<ConnectorResult<SkillTestResult>> {
-    const startTime = Date.now();
-
     const mockOutput = this.generateMockOutput(skill, testCase);
 
     const criteriaResults = this.evaluateCriteria(
@@ -213,7 +211,7 @@ Follow the skill instructions carefully. Produce working code that satisfies the
 
   private getMockResponseForSkill(
     skill: ParsedSkill,
-    testCase: SkillTestCase,
+    _testCase: SkillTestCase,
   ): string {
     if (skill.metadata.name === "mcp-builder") {
       return this.getMockMCPBuilderResponse();

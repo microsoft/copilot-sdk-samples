@@ -9,12 +9,7 @@ import {
   createACASessionsConnector,
 } from "../../../../shared/connectors/aca-sessions/client.js";
 import { ACASessionsConnectorConfig } from "../../../../shared/connectors/aca-sessions/types.js";
-import {
-  REPLResult,
-  REPLLanguage,
-  RLMIteration,
-  createIteration,
-} from "../types.js";
+import { REPLResult, REPLLanguage, createIteration } from "../types.js";
 import {
   AbstractEnvironment,
   EnvironmentConfig,
@@ -81,7 +76,7 @@ export class ACASessionsEnvironment extends AbstractEnvironment {
   async execute(
     code: string,
     variables?: Record<string, unknown>,
-    timeout?: number,
+    _timeout?: number,
   ): Promise<ConnectorResult<REPLResult>> {
     if (!this._isInitialized || !this._sessionId) {
       return failure({
@@ -201,7 +196,9 @@ export class ACASessionsEnvironment extends AbstractEnvironment {
           );
           modifiedResult = responses;
         }
-      } catch {}
+      } catch {
+        // Ignore JSON parse errors for batched prompts
+      }
     }
 
     return { modifiedStdout, modifiedResult };

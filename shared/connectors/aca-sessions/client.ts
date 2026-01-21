@@ -232,7 +232,7 @@ class MockACASessionsConnector implements ACASessionsConnector {
     }
 
     const simpleExpr = code.trim();
-    if (/^\d+\s*[\+\-\*\/]\s*\d+$/.test(simpleExpr)) {
+    if (/^\d+\s*[+\-*/]\s*\d+$/.test(simpleExpr)) {
       try {
         const evalResult = Function(`"use strict"; return (${simpleExpr})`)();
         return { stdout: "", stderr: "", result: String(evalResult) };

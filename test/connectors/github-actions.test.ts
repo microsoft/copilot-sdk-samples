@@ -283,7 +283,11 @@ describe("shared/connectors/github-actions", () => {
 
         expectSuccess(result);
         expect(result.data).toBeDefined();
-        const parsed = JSON.parse(result.data!);
+        const dataStr =
+          typeof result.data === "string"
+            ? result.data
+            : result.data!.toString("utf-8");
+        const parsed = JSON.parse(dataStr);
         expect(parsed.tests).toBe(42);
       });
 
@@ -373,10 +377,22 @@ describe("shared/connectors/github-actions", () => {
       expectFailure(result, ErrorCodes.AUTH_REQUIRED);
     });
 
-    it("should initialize with token", async () => {
+    it("should require owner and repo for initialization", async () => {
       const connector = createGitHubActionsConnector({
         mode: "live",
         token: "test-token",
+      });
+      const result = await connector.initialize();
+
+      expectFailure(result, ErrorCodes.VALIDATION_ERROR);
+    });
+
+    it("should initialize with token, owner, and repo", async () => {
+      const connector = createGitHubActionsConnector({
+        mode: "live",
+        token: "test-token",
+        owner: "test-owner",
+        repo: "test-repo",
       });
       const result = await connector.initialize();
 
@@ -384,87 +400,40 @@ describe("shared/connectors/github-actions", () => {
       expect(connector.isInitialized).toBe(true);
     });
 
-    it("should return NOT_IMPLEMENTED for listWorkflows", async () => {
+    it("should return NOT_INITIALIZED when methods called before initialize", async () => {
       const connector = createGitHubActionsConnector({
         mode: "live",
         token: "test-token",
+        owner: "test-owner",
+        repo: "test-repo",
       });
-      await connector.initialize();
 
-      const result = await connector.listWorkflows();
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
+      const listResult = await connector.listWorkflows();
+      expectFailure(listResult, ErrorCodes.NOT_INITIALIZED);
 
-    it("should return NOT_IMPLEMENTED for dispatchWorkflow", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
-
-      const result = await connector.dispatchWorkflow({
+      const dispatchResult = await connector.dispatchWorkflow({
         workflowId: 1,
         ref: "main",
       });
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
+      expectFailure(dispatchResult, ErrorCodes.NOT_INITIALIZED);
 
-    it("should return NOT_IMPLEMENTED for getWorkflowRun", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
+      const getRunResult = await connector.getWorkflowRun(1);
+      expectFailure(getRunResult, ErrorCodes.NOT_INITIALIZED);
 
-      const result = await connector.getWorkflowRun(1);
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
+      const waitResult = await connector.waitForWorkflowRun(1);
+      expectFailure(waitResult, ErrorCodes.NOT_INITIALIZED);
 
-    it("should return NOT_IMPLEMENTED for waitForWorkflowRun", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
+      const listArtifactsResult = await connector.listArtifacts(1);
+      expectFailure(listArtifactsResult, ErrorCodes.NOT_INITIALIZED);
 
-      const result = await connector.waitForWorkflowRun(1);
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
+      const downloadResult = await connector.downloadArtifact(1);
+      expectFailure(downloadResult, ErrorCodes.NOT_INITIALIZED);
 
-    it("should return NOT_IMPLEMENTED for listArtifacts", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
-
-      const result = await connector.listArtifacts(1);
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
-
-    it("should return NOT_IMPLEMENTED for downloadArtifact", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
-
-      const result = await connector.downloadArtifact(1);
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
-    });
-
-    it("should return NOT_IMPLEMENTED for executeREPL", async () => {
-      const connector = createGitHubActionsConnector({
-        mode: "live",
-        token: "test-token",
-      });
-      await connector.initialize();
-
-      const result = await connector.executeREPL({
+      const replResult = await connector.executeREPL({
         code: "test",
         language: "js",
       });
-      expectFailure(result, ErrorCodes.NOT_IMPLEMENTED);
+      expectFailure(replResult, ErrorCodes.NOT_INITIALIZED);
     });
   });
 });
