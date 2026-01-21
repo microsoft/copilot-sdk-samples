@@ -40,8 +40,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -53,9 +51,22 @@ jobs:
           RLM_QUERY: ${{ inputs.query }}
           RLM_LANGUAGE: ${{ inputs.language }}
           RLM_TIMEOUT: ${{ inputs.timeout }}
+          RLM_STREAMING: "true"
         run: |
           mkdir -p output
           pnpm rlm-orchestration 2>&1 | tee output/execution.log
+
+          # Extract RLM events from the log into a separate NDJSON file
+          grep '__RLM_EVENT__' output/execution.log | sed 's/__RLM_EVENT__//' > output/events.ndjson || true
+
+          # Create a summary JSON with the final execution state
+          if [ -f output/events.ndjson ]; then
+            # Get the last execution_summary event if it exists
+            tail -1 output/events.ndjson | grep -q '"type":"execution_summary"' && \
+              tail -1 output/events.ndjson > output/summary.json || \
+              echo '{"type":"no_summary"}' > output/summary.json
+          fi
+
           echo "execution_complete=true" >> $GITHUB_OUTPUT
 
       - name: Upload execution output
