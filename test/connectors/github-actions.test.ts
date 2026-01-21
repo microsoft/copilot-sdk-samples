@@ -283,11 +283,8 @@ describe("shared/connectors/github-actions", () => {
 
         expectSuccess(result);
         expect(result.data).toBeDefined();
-        const dataStr =
-          typeof result.data === "string"
-            ? result.data
-            : result.data!.toString("utf-8");
-        const parsed = JSON.parse(dataStr);
+        // Mock connector always returns string
+        const parsed = JSON.parse(result.data as string);
         expect(parsed.tests).toBe(42);
       });
 
