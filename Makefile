@@ -52,6 +52,18 @@ scaffold:
 			$(if $(GHAW),--ghaw); \
 	fi
 
+azd-init:
+	azd init
+
+azd-up:
+	azd up
+
+azd-down:
+	azd down
+
+azd-deploy:
+	azd deploy
+
 hello-world:
 	pnpm hello-world
 
@@ -84,3 +96,9 @@ help:
 	@echo "    hello-world    - Run hello-world sample"
 	@echo "    scaffold       - Scaffold a new sample"
 	@echo "                     Example: make scaffold ID=my-sample NAME='My Sample'"
+	@echo ""
+	@echo "  Azure (azd):"
+	@echo "    azd-init       - Initialize Azure Developer CLI"
+	@echo "    azd-up         - Provision and deploy to Azure"
+	@echo "    azd-down       - Delete Azure resources"
+	@echo "    azd-deploy     - Deploy without provisioning"

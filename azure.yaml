@@ -1,0 +1,34 @@
+name: copilot-sdk-samples
+metadata:
+  template: copilot-sdk-samples@1.0.0
+
+workflows:
+  up:
+    steps:
+      - azd: provision
+      - azd: deploy
+
+services:
+  # Backend API server - runs Express on port 3001
+  api:
+    project: .
+    language: ts
+    host: containerapp
+    docker:
+      path: ./Dockerfile.api
+      context: .
+      target: production
+      remoteBuild: true
+
+  # Frontend React app - served via nginx on port 80
+  web:
+    project: ./frontend
+    language: ts
+    host: containerapp
+    docker:
+      path: ./Dockerfile.frontend
+      context: ..
+      target: production
+      remoteBuild: true
+      buildArgs:
+        VITE_API_URL: ${SERVICE_API_URI}
