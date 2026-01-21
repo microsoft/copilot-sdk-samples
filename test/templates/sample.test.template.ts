@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import type { CopilotClient } from "@github/copilot-sdk";
 
 // Mock the Copilot SDK before importing
 const { mockStart, mockStop, mockCreateSession, MockCopilotClient } =
@@ -27,7 +29,8 @@ vi.mock("@github/copilot-sdk", () => ({
 }));
 
 import { createClient, runSample } from "../../../shared/client.js";
-import { expectSuccess, expectFailure } from "../../helpers/index.js";
+// TODO: Uncomment when using these helpers
+// import { expectSuccess, expectFailure } from "../../helpers/index.js";
 // TODO: Import your sample-specific functions
 // import { mySampleFunction } from "../../../samples/__sample_name__/sdk/index.js";
 
@@ -75,7 +78,7 @@ describe("__sample_name__ sample", () => {
           name: "__SAMPLE_NAME__",
           description: "Test execution",
         },
-        async (client) => {
+        async (client: CopilotClient) => {
           expect(client).toBeDefined();
           // TODO: Add sample-specific workflow test
           return "success";
@@ -240,7 +243,7 @@ describe("__sample_name__ sample", () => {
           name: "__SAMPLE_NAME__",
           description: "Test session",
         },
-        async (client) => {
+        async (client: CopilotClient) => {
           const session = await client.createSession({
             model: "gpt-4",
           });
@@ -261,7 +264,7 @@ describe("__sample_name__ sample", () => {
       await expect(
         runSample(
           { name: "__SAMPLE_NAME__", description: "Test" },
-          async (client) => {
+          async (client: CopilotClient) => {
             await client.createSession({ model: "gpt-4" });
           },
         ),

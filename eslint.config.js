@@ -5,7 +5,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ["dist/", "node_modules/", "frontend/"],
+    ignores: ["dist/", "node_modules/", "frontend/", "test/templates/"],
   },
   {
     files: ["**/*.ts"],
