@@ -172,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
         <ul className="sidebar-resources">
           <li>
             <a
-              href="https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples"
+              href="https://github.com/microsoft/copilot-sdk-samples"
               target="_blank"
               rel="noopener noreferrer"
               className="sidebar-resource-link"

@@ -1,7 +1,7 @@
 {
   "$schema": "./catalog.schema.json",
   "version": "1.0.0",
-  "repositoryUrl": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples",
+  "repositoryUrl": "https://github.com/microsoft/copilot-sdk-samples",
   "demos": [
     {
       "id": "hello-world",
@@ -15,8 +15,8 @@
         "ghaw": true
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/hello-world/sdk",
-        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/hello-world.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/hello-world/sdk",
+        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/hello-world.md"
       },
       "dependencies": [],
       "connectors": [],
@@ -35,8 +35,8 @@
         "ghaw": true
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/issue-triage/sdk",
-        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/issue-triage.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/issue-triage/sdk",
+        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/issue-triage.md"
       },
       "dependencies": [],
       "connectors": ["github"],
@@ -55,8 +55,8 @@
         "ghaw": true
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/security-alerts/sdk",
-        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/security-alerts.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/security-alerts/sdk",
+        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/security-alerts.md"
       },
       "dependencies": [],
       "connectors": ["github"],
@@ -75,8 +75,8 @@
         "ghaw": true
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/mcp-orchestration/sdk",
-        "ghaw": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/.github/aw/samples/mcp-orchestration.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/mcp-orchestration/sdk",
+        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/mcp-orchestration.md"
       },
       "dependencies": [],
       "connectors": [],
@@ -95,7 +95,7 @@
         "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/skill-testing/sdk"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/skill-testing/sdk"
       },
       "dependencies": [],
       "connectors": ["mslearn-mcp"],
@@ -114,7 +114,7 @@
         "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/eda-pcb/sdk"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/eda-pcb/sdk"
       },
       "dependencies": [],
       "connectors": ["eda"],
@@ -133,7 +133,7 @@
         "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/pagerduty/sdk"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/pagerduty/sdk"
       },
       "dependencies": [],
       "connectors": ["pagerduty"],
@@ -152,7 +152,7 @@
         "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/datadog/sdk"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/datadog/sdk"
       },
       "dependencies": [],
       "connectors": ["datadog"],
@@ -171,7 +171,7 @@
         "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/tree/main/samples/teams/sdk"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/teams/sdk"
       },
       "dependencies": [],
       "connectors": ["teams"],
@@ -187,8 +187,8 @@
       "description": "GitHub issues, PRs, and security alerts",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/github/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/github/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/github/client.ts"
       }
     },
     {
@@ -197,8 +197,8 @@
       "description": "Incident management platform",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/pagerduty/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/pagerduty/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/pagerduty/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/pagerduty/client.ts"
       }
     },
     {
@@ -207,8 +207,8 @@
       "description": "Monitoring and analytics platform",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/datadog/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/datadog/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/datadog/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/datadog/client.ts"
       }
     },
     {
@@ -217,8 +217,8 @@
       "description": "Microsoft Teams collaboration platform via MS Graph",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/teams/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/teams/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/teams/client.ts"
       }
     },
     {
@@ -227,8 +227,8 @@
       "description": "Microsoft Learn documentation MCP server client",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/mslearn-mcp/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/mslearn-mcp/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/mslearn-mcp/client.ts"
       }
     },
     {
@@ -237,8 +237,8 @@
       "description": "Electronic Design Automation connector for PCB design, DRC, auto-routing, and signal integrity analysis",
       "status": "implemented",
       "paths": {
-        "client": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/eda/client.ts",
-        "mock": "https://github.com/microsoft-foundry/copilot-sdk-ghaw-samples/blob/main/shared/connectors/eda/client.ts"
+        "client": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/eda/client.ts",
+        "mock": "https://github.com/microsoft/copilot-sdk-samples/blob/main/shared/connectors/eda/client.ts"
       }
     }
   ],
