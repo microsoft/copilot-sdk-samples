@@ -1320,7 +1320,22 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                 <div className="modal-section">
                   <h3 className="modal-section-title">
                     <Terminal size={18} />
-                    RLM Visualization
+                    <a
+                      href="https://alexzhang13.github.io/blog/2025/rlm/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "var(--text-link)",
+                        textDecoration: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      RLM
+                      <ExternalLink size={12} />
+                    </a>
+                    Visualization
                   </h3>
 
                   <div className="modal-run-section">
@@ -1953,7 +1968,22 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
                 <div className="modal-section">
                   <h3 className="modal-section-title">
                     <Terminal size={18} />
-                    Run Demo
+                    <a
+                      href="https://devblogs.microsoft.com/all-things-azure/context-driven-development-agent-skills-for-microsoft-foundry-and-azure/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "var(--text-link)",
+                        textDecoration: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      Agent Skills
+                      <ExternalLink size={12} />
+                    </a>
+                    Testing
                   </h3>
                   <div className="modal-run-section">
                     <div className="modal-mode-toggle">

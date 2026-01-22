@@ -2,7 +2,11 @@
  * RLM Orchestration - TypeScript SDK Sample
  *
  * Demonstrates the Recursive LLM (RLM) pattern using Azure Container Apps
- * Dynamic Sessions for secure code execution. The RLM pattern enables:
+ * Dynamic Sessions for secure code execution.
+ *
+ * @see https://alexzhang13.github.io/blog/2025/rlm/ - Original RLM paper
+ *
+ * The RLM pattern enables:
  * - Iterative reasoning through code execution
  * - Nested LLM queries for complex problems
  * - Variable persistence across iterations

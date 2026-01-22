@@ -1,6 +1,6 @@
 # Skill Testing (SDK)
 
-Test harness for evaluating and validating Copilot skills.
+Test harness for evaluating and validating Copilot [agent skills](https://devblogs.microsoft.com/all-things-azure/context-driven-development-agent-skills-for-microsoft-foundry-and-azure/).
 
 ## What This Demonstrates
 

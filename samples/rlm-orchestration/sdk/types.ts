@@ -1,8 +1,8 @@
 /**
  * RLM Orchestration Types
  *
- * Based on the RLM paper (alexzhang13/rlm) - adapts recursive LLM patterns
- * for use with GitHub Copilot SDK and cloud execution environments.
+ * Based on the Recursive LLM (RLM) paper: https://alexzhang13.github.io/blog/2025/rlm/
+ * Adapts recursive LLM patterns for use with GitHub Copilot SDK and cloud execution environments.
  */
 
 /** Supported REPL languages */

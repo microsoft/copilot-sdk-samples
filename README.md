@@ -26,18 +26,18 @@ pnpm hello-world # Run a sample directly
 
 ## Samples
 
-| Sample              | Description                | Connectors |
-| ------------------- | -------------------------- | ---------- |
-| `hello-world`       | Basic SDK setup            | —          |
-| `issue-triage`      | Auto-label GitHub issues   | GitHub     |
-| `security-alerts`   | Prioritize vulnerabilities | GitHub     |
-| `mcp-orchestration` | Query dev infrastructure   | —          |
-| `skill-testing`     | Test agent skills          | MS Learn   |
-| `rlm-orchestration` | Recursive LLM pattern      | —          |
-| `eda-pcb`           | PCB design analysis        | EDA        |
-| `pagerduty`         | Incident management        | PagerDuty  |
-| `datadog`           | Monitoring & observability | Datadog    |
-| `teams`             | MS Teams collaboration     | Teams      |
+| Sample              | Description                                                                                                                                   | Connectors |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `hello-world`       | Basic SDK setup                                                                                                                               | —          |
+| `issue-triage`      | Auto-label GitHub issues                                                                                                                      | GitHub     |
+| `security-alerts`   | Prioritize vulnerabilities                                                                                                                    | GitHub     |
+| `mcp-orchestration` | Query dev infrastructure                                                                                                                      | —          |
+| `skill-testing`     | Test [agent skills](https://devblogs.microsoft.com/all-things-azure/context-driven-development-agent-skills-for-microsoft-foundry-and-azure/) | MS Learn   |
+| `rlm-orchestration` | [Recursive LLM](https://alexzhang13.github.io/blog/2025/rlm/) pattern                                                                         | —          |
+| `eda-pcb`           | PCB design analysis                                                                                                                           | EDA        |
+| `pagerduty`         | Incident management                                                                                                                           | PagerDuty  |
+| `datadog`           | Monitoring & observability                                                                                                                    | Datadog    |
+| `teams`             | MS Teams collaboration                                                                                                                        | Teams      |
 
 Run any sample: `pnpm <sample-name>` (e.g., `pnpm issue-triage`)
 

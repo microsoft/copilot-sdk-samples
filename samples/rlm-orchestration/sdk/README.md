@@ -1,6 +1,6 @@
 # RLM Orchestration (SDK)
 
-Recursive LLM pattern with iterative reasoning and code execution.
+[Recursive LLM (RLM)](https://alexzhang13.github.io/blog/2025/rlm/) pattern with iterative reasoning and code execution.
 
 ## What This Demonstrates
 

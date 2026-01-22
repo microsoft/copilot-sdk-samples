@@ -391,9 +391,27 @@ const RLMDemo: React.FC = () => {
                     margin: 0,
                     textTransform: "uppercase",
                     letterSpacing: "0.5px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
                   }}
                 >
-                  Recursive Language Model Demo
+                  <a
+                    href="https://alexzhang13.github.io/blog/2025/rlm/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "var(--text-link)",
+                      textDecoration: "none",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    Recursive Language Model
+                    <ExternalLink size={10} />
+                  </a>
+                  Demo
                 </p>
               </div>
             </div>

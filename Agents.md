@@ -42,18 +42,18 @@ Demo repository for GitHub Copilot SDK and gh-aw workflow samples (Node.js + Typ
 
 Run any sample with `pnpm <sample-name>`:
 
-| Command                  | Description                |
-| ------------------------ | -------------------------- |
-| `pnpm hello-world`       | Basic SDK setup            |
-| `pnpm issue-triage`      | Auto-label GitHub issues   |
-| `pnpm security-alerts`   | Prioritize vulnerabilities |
-| `pnpm mcp-orchestration` | Query dev infrastructure   |
-| `pnpm skill-testing`     | Test agent skills          |
-| `pnpm rlm-orchestration` | Recursive LLM pattern      |
-| `pnpm eda-pcb`           | PCB design analysis        |
-| `pnpm pagerduty`         | Incident management        |
-| `pnpm datadog`           | Monitoring & observability |
-| `pnpm teams`             | MS Teams collaboration     |
+| Command                  | Description                                                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm hello-world`       | Basic SDK setup                                                                                                                               |
+| `pnpm issue-triage`      | Auto-label GitHub issues                                                                                                                      |
+| `pnpm security-alerts`   | Prioritize vulnerabilities                                                                                                                    |
+| `pnpm mcp-orchestration` | Query dev infrastructure                                                                                                                      |
+| `pnpm skill-testing`     | Test [agent skills](https://devblogs.microsoft.com/all-things-azure/context-driven-development-agent-skills-for-microsoft-foundry-and-azure/) |
+| `pnpm rlm-orchestration` | [Recursive LLM](https://alexzhang13.github.io/blog/2025/rlm/) pattern                                                                         |
+| `pnpm eda-pcb`           | PCB design analysis                                                                                                                           |
+| `pnpm pagerduty`         | Incident management                                                                                                                           |
+| `pnpm datadog`           | Monitoring & observability                                                                                                                    |
+| `pnpm teams`             | MS Teams collaboration                                                                                                                        |
 
 ## Key Conventions
 
