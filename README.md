@@ -3,7 +3,7 @@
 > [!CAUTION]
 > **Work in Progress** — This repository is under active development. APIs and samples may change without notice.
 
-Sample applications demonstrating GitHub Copilot SDK and Agentic Workflows (gh-aw).
+Sample applications demonstrating the GitHub Copilot SDK.
 
 ## Quick Start
 

@@ -29,6 +29,8 @@ export interface Catalog {
 
 export type SampleType = "sdk" | "ghaw" | "both";
 
+export type TierFilter = "all" | "dev" | "isv";
+
 export interface Demo {
   id: string;
   name: string;

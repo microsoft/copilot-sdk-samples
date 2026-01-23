@@ -14,11 +14,6 @@ pnpm scaffold <id> --name "Display Name" --description "What it does" --connecto
 4. Add tests in `test/samples/<name>/`
 5. Update `samples/catalog.json` and `frontend/public/catalog.json`
 
-## gh-aw Workflows
-
-1. Create `.github/aw/samples/<name>.md`
-2. Compile: `gh aw compile .github/aw/samples/<name>.md`
-
 ## Sample Structure
 
 Each sample should have:

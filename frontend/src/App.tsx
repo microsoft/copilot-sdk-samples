@@ -5,12 +5,12 @@ import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import DemoCard from "./components/DemoCard";
 import DemoDetailModal from "./components/DemoDetailModal";
-import type { Catalog, Demo, SampleType } from "./types";
+import type { Catalog, Demo, TierFilter } from "./types";
 import "./index.css";
 
 const App: React.FC = () => {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
-  const [activeView, setActiveView] = useState<SampleType | "all">("all");
+  const [activeFilter, setActiveFilter] = useState<TierFilter>("all");
   const [selectedDemo, setSelectedDemo] = useState<Demo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,40 +33,41 @@ const App: React.FC = () => {
       });
   }, []);
 
-  const { sdkCount, ghawCount } = useMemo(() => {
-    if (!catalog) return { sdkCount: 0, ghawCount: 0 };
+  const { devCount, isvCount } = useMemo(() => {
+    if (!catalog) return { devCount: 0, isvCount: 0 };
     return {
-      sdkCount: catalog.demos.filter((d) => d.features.sdk).length,
-      ghawCount: catalog.demos.filter((d) => d.features.ghaw).length,
+      devCount: catalog.demos.filter((d) => d.tier === "mandatory").length,
+      isvCount: catalog.demos.filter(
+        (d) => d.tier === "isv-tier-1" || d.tier === "isv-tier-2",
+      ).length,
     };
   }, [catalog]);
 
   const filteredDemos = useMemo(() => {
-    if (!catalog) return { core: [], isv: [] };
+    if (!catalog) return { dev: [], isv: [] };
 
-    let demos = catalog.demos;
-
-    if (activeView !== "all") {
-      demos = demos.filter((demo) => {
-        if (activeView === "sdk") return demo.features.sdk;
-        if (activeView === "ghaw") return demo.features.ghaw;
-        return true;
-      });
-    }
-
-    const core = demos.filter((d) => d.tier === "mandatory");
-    const isv = demos.filter(
+    const dev = catalog.demos.filter((d) => d.tier === "mandatory");
+    const isv = catalog.demos.filter(
       (d) => d.tier === "isv-tier-1" || d.tier === "isv-tier-2",
     );
 
+    // Move Teams demo to front of ISV list
     const teamsDemoIndex = isv.findIndex((d) => d.id === "teams");
     if (teamsDemoIndex > 0) {
       const teamsDemo = isv.splice(teamsDemoIndex, 1)[0];
       isv.unshift(teamsDemo);
     }
 
-    return { core, isv };
-  }, [catalog, activeView]);
+    // Filter based on active tab
+    if (activeFilter === "dev") {
+      return { dev, isv: [] };
+    }
+    if (activeFilter === "isv") {
+      return { dev: [], isv };
+    }
+
+    return { dev, isv };
+  }, [catalog, activeFilter]);
 
   const handleDemoClick = (demo: Demo) => {
     setSelectedDemo(demo);
@@ -102,15 +103,15 @@ const App: React.FC = () => {
     );
   }
 
-  const totalDemos = filteredDemos.core.length + filteredDemos.isv.length;
+  const totalDemos = filteredDemos.dev.length + filteredDemos.isv.length;
 
   return (
     <div className="app">
       <Header
-        activeView={activeView}
-        onViewChange={setActiveView}
-        sdkCount={sdkCount}
-        ghawCount={ghawCount}
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+        devCount={devCount}
+        isvCount={isvCount}
       />
 
       <div className="app-body">
@@ -126,15 +127,17 @@ const App: React.FC = () => {
               </div>
             ) : (
               <>
-                {filteredDemos.core.length > 0 && (
+                {filteredDemos.dev.length > 0 && (
                   <section className="demo-section">
                     <header className="demo-section-header">
                       <div className="demo-section-title-group">
                         <Sparkles size={18} className="demo-section-icon" />
-                        <h2 className="demo-section-title">Core Samples</h2>
+                        <h2 className="demo-section-title">
+                          Developer Samples
+                        </h2>
                       </div>
                       <p className="demo-section-subtitle">
-                        Essential patterns for SDK and workflow development
+                        Essential patterns for SDK development
                       </p>
                     </header>
                     <motion.div
@@ -143,7 +146,7 @@ const App: React.FC = () => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {filteredDemos.core.map((demo, index) => (
+                      {filteredDemos.dev.map((demo, index) => (
                         <DemoCard
                           key={demo.id}
                           demo={demo}

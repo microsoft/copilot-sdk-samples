@@ -1,12 +1,12 @@
 import React from "react";
-import { Github, Code2, Workflow } from "lucide-react";
-import type { SampleType } from "../types";
+import { Github, Code2, Boxes } from "lucide-react";
+import type { TierFilter } from "../types";
 
 interface HeaderProps {
-  activeView: SampleType | "all";
-  onViewChange: (view: SampleType | "all") => void;
-  sdkCount: number;
-  ghawCount: number;
+  activeFilter: TierFilter;
+  onFilterChange: (filter: TierFilter) => void;
+  devCount: number;
+  isvCount: number;
 }
 
 const LogoIcon: React.FC = () => (
@@ -42,10 +42,10 @@ const LogoIcon: React.FC = () => (
 );
 
 const Header: React.FC<HeaderProps> = ({
-  activeView,
-  onViewChange,
-  sdkCount,
-  ghawCount,
+  activeFilter,
+  onFilterChange,
+  devCount,
+  isvCount,
 }) => {
   return (
     <header className="header">
@@ -55,26 +55,26 @@ const Header: React.FC<HeaderProps> = ({
         </div>
         <div className="header-titles">
           <h1 className="header-title">GitHub Copilot SDK</h1>
-          <span className="header-subtitle">Samples & Workflows</span>
+          <span className="header-subtitle">Samples</span>
         </div>
       </div>
 
       <nav className="header-nav">
         <button
-          className={`header-nav-tab header-nav-tab-sdk ${activeView === "all" || activeView === "sdk" ? "active" : ""}`}
-          onClick={() => onViewChange("all")}
+          className={`header-nav-tab header-nav-tab-sdk ${activeFilter === "all" || activeFilter === "dev" ? "active" : ""}`}
+          onClick={() => onFilterChange("all")}
         >
           <Code2 size={16} />
-          <span className="header-nav-tab-label">Copilot SDK</span>
-          <span className="header-nav-tab-count">{sdkCount}</span>
+          <span className="header-nav-tab-label">Developer</span>
+          <span className="header-nav-tab-count">{devCount}</span>
         </button>
         <button
-          className={`header-nav-tab header-nav-tab-ghaw ${activeView === "ghaw" ? "active" : ""}`}
-          onClick={() => onViewChange("ghaw")}
+          className={`header-nav-tab header-nav-tab-isv ${activeFilter === "isv" ? "active" : ""}`}
+          onClick={() => onFilterChange("isv")}
         >
-          <Workflow size={16} />
-          <span className="header-nav-tab-label">gh-aw</span>
-          <span className="header-nav-tab-count">{ghawCount}</span>
+          <Boxes size={16} />
+          <span className="header-nav-tab-label">ISV</span>
+          <span className="header-nav-tab-count">{isvCount}</span>
         </button>
       </nav>
 

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Demo repository for GitHub Copilot SDK and gh-aw workflow samples (Node.js + TypeScript).
+Demo repository for GitHub Copilot SDK samples (Node.js + TypeScript).
 
 ## Essentials
 

@@ -80,28 +80,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
             SDK Documentation
           </a>
         </div>
-
-        <div className="sidebar-about-item">
-          <div className="sidebar-about-header">
-            <div className="sidebar-about-icon sidebar-about-icon-ghaw">
-              <GitBranch size={16} />
-            </div>
-            <h3 className="sidebar-about-title">gh-aw Workflows</h3>
-          </div>
-          <p className="sidebar-about-desc">
-            Markdown-defined workflows running on GitHub Actions for declarative
-            automation.
-          </p>
-          <a
-            href="https://githubnext.github.io/gh-aw/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sidebar-about-link"
-          >
-            <ExternalLink size={12} />
-            Workflow Docs
-          </a>
-        </div>
       </div>
 
       <CollapsibleSection
@@ -190,17 +168,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
             >
               <Book size={14} />
               <span>Copilot SDK</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://githubnext.github.io/gh-aw/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sidebar-resource-link"
-            >
-              <ExternalLink size={14} />
-              <span>gh-aw Documentation</span>
             </a>
           </li>
         </ul>

@@ -28,7 +28,3 @@ pnpm tsx samples/hello-world/sdk/index.ts
 3. **Event Handling**: Listens for `assistant.message` events to capture responses
 4. **Completion Detection**: Uses `session.idle` event to know when response is complete
 5. **Cleanup**: Destroys session and stops client
-
-## See Also
-
-- **gh-aw version**: [.github/aw/samples/hello-world.md](../../../.github/aw/samples/hello-world.md)

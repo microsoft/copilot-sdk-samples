@@ -49,14 +49,13 @@
       "description": "Get started in minutes with this foundational sample. Perfect for developers new to the Copilot SDK, demonstrating core concepts like client initialization, agent communication, and response handling. Ideal first step before building production integrations.",
       "tier": "mandatory",
       "status": "implemented",
-      "type": "both",
+      "type": "sdk",
       "features": {
         "sdk": true,
-        "ghaw": true
+        "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/hello-world/sdk",
-        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/hello-world.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/hello-world/sdk"
       },
       "dependencies": [],
       "connectors": [],
@@ -69,14 +68,13 @@
       "description": "Reduce manual triage time by 70%+ with AI-powered issue classification. Automatically categorize, prioritize, and label incoming GitHub issues based on content analysis. Essential for teams managing high-volume repositories seeking to improve response times and developer productivity.",
       "tier": "mandatory",
       "status": "implemented",
-      "type": "both",
+      "type": "sdk",
       "features": {
         "sdk": true,
-        "ghaw": true
+        "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/issue-triage/sdk",
-        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/issue-triage.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/issue-triage/sdk"
       },
       "dependencies": [],
       "connectors": ["github"],
@@ -89,14 +87,13 @@
       "description": "Accelerate vulnerability remediation with intelligent prioritization. Analyzes security alerts by severity, exploitability, and business impact to surface critical issues first. Helps security teams reduce MTTR and maintain compliance while focusing on what matters most.",
       "tier": "mandatory",
       "status": "implemented",
-      "type": "both",
+      "type": "sdk",
       "features": {
         "sdk": true,
-        "ghaw": true
+        "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/security-alerts/sdk",
-        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/security-alerts.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/security-alerts/sdk"
       },
       "dependencies": [],
       "connectors": ["github"],
@@ -109,14 +106,13 @@
       "description": "Unify your dev infrastructure queries through Model Context Protocol. Connect CI/CD pipelines, Kubernetes clusters, and monitoring systems into a single AI-queryable interface. Enables natural language infrastructure queries, reducing context-switching and accelerating incident response.",
       "tier": "mandatory",
       "status": "implemented",
-      "type": "both",
+      "type": "sdk",
       "features": {
         "sdk": true,
-        "ghaw": true
+        "ghaw": false
       },
       "paths": {
-        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/mcp-orchestration/sdk",
-        "ghaw": "https://github.com/microsoft/copilot-sdk-samples/blob/main/.github/aw/samples/mcp-orchestration.md"
+        "sdk": "https://github.com/microsoft/copilot-sdk-samples/tree/main/samples/mcp-orchestration/sdk"
       },
       "dependencies": [],
       "connectors": [],
