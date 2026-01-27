@@ -1,1 +1,10 @@
+# Run lint-staged for formatting and linting
 pnpm exec lint-staged
+
+# Run typecheck on staged files only
+echo "Running typecheck..."
+pnpm typecheck
+
+# Run tests related to changed files
+echo "Running related tests..."
+pnpm vitest related --run $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' | tr '\n' ' ') 2>/dev/null || true

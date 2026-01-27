@@ -9,9 +9,15 @@ export default defineConfig({
     setupFiles: ["test/setup.ts"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html"],
+      reporter: ["text", "json", "html", "lcov"],
       include: ["shared/**/*.ts", "samples/**/*.ts"],
-      exclude: ["**/node_modules/**", "**/dist/**"],
+      exclude: ["**/node_modules/**", "**/dist/**", "**/index.ts", "**/*.d.ts"],
+      thresholds: {
+        statements: 50,
+        branches: 45,
+        functions: 55,
+        lines: 50,
+      },
     },
     testTimeout: 10000,
     hookTimeout: 10000,

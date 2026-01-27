@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Run full test suite before pushing
+echo "Running full test suite..."
+pnpm test
+
+# Run typecheck
+echo "Running typecheck..."
+pnpm typecheck
+
+# Run lint
+echo "Running lint..."
+pnpm lint

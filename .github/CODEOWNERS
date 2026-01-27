@@ -1,0 +1,20 @@
+# Code Owners
+# These owners will be requested for review on PRs affecting their areas
+
+# Global owners - will be requested for all changes
+* @govindm4max
+
+# Shared connectors - core infrastructure
+/shared/connectors/ @govindm4max
+
+# Test infrastructure
+/test/helpers/ @govindm4max
+
+# CI/CD configuration
+/.github/ @govindm4max
+
+# Build and config files
+/package.json @govindm4max
+/vitest.config.ts @govindm4max
+/tsconfig.json @govindm4max
+/eslint.config.js @govindm4max
