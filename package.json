@@ -41,14 +41,13 @@
     "@github/copilot-sdk": "^0.1.0",
     "@octokit/rest": "^22.0.1",
     "adm-zip": "^0.5.16",
-    "cors": "^2.8.5",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
     "framer-motion": "^12.27.0",
     "mermaid": "^11.12.2"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
-    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.0",
     "@vitest/coverage-v8": "^4.0.17",

@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction, Application } from "express";
-import cors from "cors";
+import { rateLimit } from "express-rate-limit";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -9,60 +9,69 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT ?? 3001);
 
-app.use(cors());
 app.use(express.json());
 
-interface DemoConfig {
+export const demoRunRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { error: "Too many demo runs; try again later" },
+});
+
+export interface DemoConfig {
   id: string;
   name: string;
   description: string;
-  command: string;
+  entrypoint: string;
+  workflow?: string;
   envVars?: Record<string, string>;
 }
 
-const DEMO_CONFIGS: Record<string, DemoConfig> = {
+export const DEMO_CONFIGS: Record<string, DemoConfig> = {
   "hello-world": {
     id: "hello-world",
     name: "Hello World",
     description: "Basic SDK setup and interaction",
-    command: "npx tsx samples/hello-world/sdk/index.ts",
+    entrypoint: "samples/hello-world/sdk/index.ts",
+    workflow: ".github/aw/samples/hello-world.md",
     envVars: { GITHUB_TOKEN: "required" },
   },
   "issue-triage": {
     id: "issue-triage",
     name: "Issue Triage",
     description: "Auto-label and triage GitHub issues using AI",
-    command: "npx tsx samples/issue-triage/sdk/index.ts",
+    entrypoint: "samples/issue-triage/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required" },
   },
   "security-alerts": {
     id: "security-alerts",
     name: "Security Alerts",
     description: "Prioritize and remediate security vulnerabilities",
-    command: "npx tsx samples/security-alerts/sdk/index.ts",
+    entrypoint: "samples/security-alerts/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required" },
   },
   "mcp-orchestration": {
     id: "mcp-orchestration",
     name: "MCP Orchestration",
     description: "Query dev infrastructure via Model Context Protocol",
-    command: "npx tsx samples/mcp-orchestration/sdk/index.ts",
+    entrypoint: "samples/mcp-orchestration/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required" },
   },
   pagerduty: {
     id: "pagerduty",
     name: "PagerDuty",
     description: "Incident management and on-call scheduling",
-    command: "npx tsx samples/pagerduty/sdk/index.ts",
+    entrypoint: "samples/pagerduty/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required", PAGERDUTY_API_KEY: "optional" },
   },
   datadog: {
     id: "datadog",
     name: "Datadog",
     description: "Monitoring and observability integration",
-    command: "npx tsx samples/datadog/sdk/index.ts",
+    entrypoint: "samples/datadog/sdk/index.ts",
     envVars: {
       GITHUB_TOKEN: "required",
       DATADOG_API_KEY: "optional",
@@ -73,7 +82,7 @@ const DEMO_CONFIGS: Record<string, DemoConfig> = {
     id: "teams",
     name: "Microsoft Teams",
     description: "Microsoft Teams collaboration integration",
-    command: "npx tsx samples/teams/sdk/index.ts",
+    entrypoint: "samples/teams/sdk/index.ts",
     envVars: {
       GITHUB_TOKEN: "required",
       TEAMS_TENANT_ID: "optional",
@@ -85,7 +94,7 @@ const DEMO_CONFIGS: Record<string, DemoConfig> = {
     id: "skill-testing",
     name: "Skill Testing",
     description: "Test AI skills against acceptance criteria",
-    command: "npx tsx samples/skill-testing/sdk/index.ts",
+    entrypoint: "samples/skill-testing/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required" },
   },
   "eda-pcb": {
@@ -93,9 +102,248 @@ const DEMO_CONFIGS: Record<string, DemoConfig> = {
     name: "EDA PCB Design",
     description:
       "AI-powered PCB design assistant with DRC, auto-routing, and signal integrity",
-    command: "npx tsx samples/eda-pcb/sdk/index.ts",
+    entrypoint: "samples/eda-pcb/sdk/index.ts",
     envVars: { GITHUB_TOKEN: "required" },
   },
+};
+
+type DemoType = "sdk" | "ghaw";
+type RunMode = "mock" | "live";
+
+export interface RunDemoBody {
+  tokens: Record<string, string>;
+  mode: RunMode;
+  demoType: DemoType;
+  params: Record<string, string>;
+}
+
+export interface DemoProcessSpec {
+  executable: string;
+  args: string[];
+}
+
+type ParseResult =
+  | { success: true; data: RunDemoBody }
+  | { success: false; error: string };
+
+type StringRecordResult =
+  | { success: true; data: Record<string, string> }
+  | { success: false; error: string };
+
+const RUN_DEMO_FIELDS = new Set(["tokens", "mode", "demoType", "params"]);
+const PARAM_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
+const LOOPBACK_HOSTNAMES = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const parseStringRecord = (
+  value: unknown,
+  fieldName: string,
+): StringRecordResult => {
+  if (value === undefined) {
+    return { success: true, data: {} };
+  }
+
+  if (!isRecord(value)) {
+    return { success: false, error: `${fieldName} must be an object` };
+  }
+
+  const result: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry !== "string") {
+      return {
+        success: false,
+        error: `${fieldName}.${key} must be a string`,
+      };
+    }
+    result[key] = entry;
+  }
+
+  return { success: true, data: result };
+};
+
+export const parseRunDemoBody = (
+  value: unknown,
+  demo: DemoConfig,
+): ParseResult => {
+  if (!isRecord(value)) {
+    return { success: false, error: "Request body must be a JSON object" };
+  }
+
+  for (const field of Object.keys(value)) {
+    if (!RUN_DEMO_FIELDS.has(field)) {
+      return { success: false, error: `Unsupported field: ${field}` };
+    }
+  }
+
+  const modeValue = value.mode;
+  if (modeValue !== undefined && modeValue !== "mock" && modeValue !== "live") {
+    return { success: false, error: "mode must be mock or live" };
+  }
+  const mode = modeValue ?? "mock";
+
+  const demoTypeValue = value.demoType;
+  if (
+    demoTypeValue !== undefined &&
+    demoTypeValue !== "sdk" &&
+    demoTypeValue !== "ghaw"
+  ) {
+    return { success: false, error: "demoType must be sdk or ghaw" };
+  }
+  const demoType = demoTypeValue ?? "sdk";
+  if (demoType === "ghaw" && !demo.workflow) {
+    return {
+      success: false,
+      error: `Demo ${demo.id} does not provide a GitHub Agentic Workflow`,
+    };
+  }
+
+  const tokensResult = parseStringRecord(value.tokens, "tokens");
+  if (!tokensResult.success) {
+    return tokensResult;
+  }
+
+  const allowedTokenNames = new Set(Object.keys(demo.envVars ?? {}));
+  for (const tokenName of Object.keys(tokensResult.data)) {
+    if (!allowedTokenNames.has(tokenName)) {
+      return {
+        success: false,
+        error: `Unsupported token field: ${tokenName}`,
+      };
+    }
+  }
+
+  const paramsResult = parseStringRecord(value.params, "params");
+  if (!paramsResult.success) {
+    return paramsResult;
+  }
+
+  for (const paramName of Object.keys(paramsResult.data)) {
+    if (!PARAM_NAME_PATTERN.test(paramName)) {
+      return {
+        success: false,
+        error: `Invalid parameter name: ${paramName}`,
+      };
+    }
+  }
+
+  return {
+    success: true,
+    data: {
+      tokens: tokensResult.data,
+      mode,
+      demoType,
+      params: paramsResult.data,
+    },
+  };
+};
+
+export const getDemoProcessSpec = (
+  demo: DemoConfig,
+  demoType: DemoType,
+): DemoProcessSpec => {
+  if (demoType === "ghaw") {
+    if (!demo.workflow) {
+      throw new Error(
+        `Demo ${demo.id} does not provide a GitHub Agentic Workflow`,
+      );
+    }
+    return {
+      executable: "gh",
+      args: ["aw", "run", demo.workflow],
+    };
+  }
+
+  return {
+    executable: process.execPath,
+    args: ["--import", "tsx", demo.entrypoint],
+  };
+};
+
+export const createDemoEnvironment = (
+  demo: DemoConfig,
+  body: RunDemoBody,
+  baseEnvironment: NodeJS.ProcessEnv = process.env,
+): NodeJS.ProcessEnv => {
+  const env: NodeJS.ProcessEnv = {
+    ...baseEnvironment,
+    CONNECTOR_MODE: body.mode,
+  };
+
+  if (body.mode === "live") {
+    for (const tokenName of Object.keys(demo.envVars ?? {})) {
+      const value = body.tokens[tokenName];
+      if (value) {
+        env[tokenName] = value;
+      }
+    }
+  }
+
+  for (const [key, value] of Object.entries(body.params)) {
+    if (value) {
+      env[`SAMPLE_${key.toUpperCase()}`] = value;
+    }
+  }
+
+  return env;
+};
+
+export const getServerHost = (
+  environment: NodeJS.ProcessEnv = process.env,
+): string => environment.HOST?.trim() || "127.0.0.1";
+
+export const isAllowedMutationOrigin = (
+  origin: string | undefined,
+  configuredOrigins = process.env.ALLOWED_ORIGINS,
+): boolean => {
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    const parsedOrigin = new URL(origin);
+    if (!["http:", "https:"].includes(parsedOrigin.protocol)) {
+      return false;
+    }
+
+    if (LOOPBACK_HOSTNAMES.has(parsedOrigin.hostname)) {
+      return true;
+    }
+
+    const allowedOrigins = (configuredOrigins ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => new URL(value).origin);
+
+    return allowedOrigins.includes(parsedOrigin.origin);
+  } catch {
+    return false;
+  }
+};
+
+const requireSecureJsonRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  if (!isAllowedMutationOrigin(req.get("Origin"))) {
+    res.status(403).json({ error: "Request origin is not allowed" });
+    return;
+  }
+
+  if (req.get("Sec-Fetch-Site") === "cross-site") {
+    res.status(403).json({ error: "Cross-site requests are not allowed" });
+    return;
+  }
+
+  if (!req.is("application/json")) {
+    res.status(415).json({ error: "Content-Type must be application/json" });
+    return;
+  }
+
+  next();
 };
 
 app.get("/api/demos", (_req: Request, res: Response) => {
@@ -126,39 +374,25 @@ app.get("/api/demos/:id", (req: Request<{ id: string }>, res: Response) => {
   });
 });
 
-interface RunDemoBody {
-  tokens?: Record<string, string>;
-  mode?: "mock" | "live";
-  command?: string;
-  demoType?: "sdk" | "ghaw";
-  params?: Record<string, string>;
-}
-
 app.post(
   "/api/demos/:id/run",
-  (req: Request<{ id: string }, unknown, RunDemoBody>, res: Response) => {
+  demoRunRateLimiter,
+  requireSecureJsonRequest,
+  (req: Request<{ id: string }, unknown, unknown>, res: Response) => {
     const demo = DEMO_CONFIGS[req.params.id];
     if (!demo) {
       res.status(404).json({ error: "Demo not found" });
       return;
     }
 
-    const {
-      tokens = {},
-      mode = "mock",
-      command,
-      demoType = "sdk",
-      params = {},
-    } = req.body;
-
-    let execCommand: string;
-    if (command) {
-      execCommand = command;
-    } else if (demoType === "ghaw") {
-      execCommand = `gh aw run .github/aw/samples/${demo.id}.md`;
-    } else {
-      execCommand = demo.command;
+    const bodyResult = parseRunDemoBody(req.body, demo);
+    if (!bodyResult.success) {
+      res.status(400).json({ error: bodyResult.error });
+      return;
     }
+
+    const body = bodyResult.data;
+    const processSpec = getDemoProcessSpec(demo, body.demoType);
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -166,30 +400,18 @@ app.post(
     res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
-    const env: Record<string, string> = {
-      ...(process.env as Record<string, string>),
-      CONNECTOR_MODE: mode,
-    };
+    const env = createDemoEnvironment(demo, body);
 
-    if (mode === "live" && tokens) {
-      Object.entries(tokens).forEach(([key, value]) => {
-        if (value) env[key] = value;
-      });
-    }
-
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value) env[`SAMPLE_${key.toUpperCase()}`] = value;
-      });
-    }
-
-    console.log(`[DEBUG] Spawning: ${execCommand}`);
+    console.log(
+      `[DEBUG] Spawning: ${processSpec.executable}`,
+      processSpec.args,
+    );
     console.log(`[DEBUG] CWD: ${ROOT_DIR}`);
 
-    const child = spawn(execCommand, [], {
+    const child = spawn(processSpec.executable, processSpec.args, {
       cwd: ROOT_DIR,
       env,
-      shell: true,
+      shell: false,
       stdio: ["pipe", "pipe", "pipe"],
     });
 
@@ -255,6 +477,7 @@ interface RLMExecuteBody {
 
 app.post(
   "/api/rlm/execute",
+  requireSecureJsonRequest,
   async (req: Request<unknown, unknown, RLMExecuteBody>, res: Response) => {
     const {
       token,
@@ -402,13 +625,16 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Demo API server running on http://localhost:${PORT}`);
-  console.log(`Available endpoints:`);
-  console.log(`  GET  /api/demos          - List all demos`);
-  console.log(`  GET  /api/demos/:id      - Get demo details`);
-  console.log(`  POST /api/demos/:id/run  - Run a demo (SSE stream)`);
-  console.log(`  GET  /health             - Health check`);
-});
+if (process.env.NODE_ENV !== "test") {
+  const host = getServerHost();
+  app.listen(PORT, host, () => {
+    console.log(`Demo API server running on http://${host}:${PORT}`);
+    console.log(`Available endpoints:`);
+    console.log(`  GET  /api/demos          - List all demos`);
+    console.log(`  GET  /api/demos/:id      - Get demo details`);
+    console.log(`  POST /api/demos/:id/run  - Run a demo (SSE stream)`);
+    console.log(`  GET  /health             - Health check`);
+  });
+}
 
 export default app;
