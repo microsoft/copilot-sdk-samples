@@ -19,6 +19,10 @@ pnpm test        # Run all tests
 pnpm hello-world # Run a sample directly
 ```
 
+The demo server binds to `127.0.0.1` and accepts browser mutation requests
+from loopback origins by default. Set `HOST` and `ALLOWED_ORIGINS` only when
+intentionally running it behind a trusted network boundary.
+
 ## Prerequisites
 
 - **Node.js 18+**

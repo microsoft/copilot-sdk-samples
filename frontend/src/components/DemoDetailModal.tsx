@@ -664,8 +664,6 @@ const getMockOutput = (demoId: string): string[] => {
   }
 };
 
-const API_BASE_URL = import.meta.env.DEV ? "http://localhost:3001" : "";
-
 const getDefaultCommand = (demoId: string, demoType: DemoType): string => {
   if (demoType === "ghaw") {
     return `gh aw run .github/aw/samples/${demoId}.md`;
@@ -771,7 +769,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
   useEffect(() => {
     const checkServer = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/health`, {
+        const response = await fetch("/health", {
           method: "GET",
           signal: AbortSignal.timeout(2000),
         });
@@ -1001,13 +999,12 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
     abortControllerRef.current = new AbortController();
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/demos/${demo.id}/run`, {
+      const response = await fetch(`/api/demos/${demo.id}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tokens,
           mode: "live",
-          command,
           demoType,
           params: sampleParams,
         }),
@@ -1061,7 +1058,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
         await runMockDemo();
       }
     }
-  }, [demo.id, tokens, command, demoType, sampleParams, runMockDemo]);
+  }, [demo.id, tokens, demoType, sampleParams, runMockDemo]);
 
   const handleRunDemo = useCallback(async () => {
     setIsRunning(true);
@@ -1113,7 +1110,7 @@ const DemoDetailModal: React.FC<DemoDetailModalProps> = ({
     let runId: number | undefined;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/rlm/execute`, {
+      const response = await fetch("/api/rlm/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
