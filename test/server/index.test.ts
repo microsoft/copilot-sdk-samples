@@ -1,9 +1,10 @@
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import app, {
   createDemoEnvironment,
   DEMO_CONFIGS,
+  demoRunRateLimiter,
   getDemoProcessSpec,
   getServerHost,
   isAllowedMutationOrigin,
@@ -120,6 +121,10 @@ describe("demo server security controls", () => {
       baseUrl = `http://127.0.0.1:${address.port}`;
     });
 
+    beforeEach(() => {
+      demoRunRateLimiter.resetKey("127.0.0.1");
+    });
+
     afterAll(async () => {
       await new Promise<void>((resolve, reject) => {
         server.close((error) => {
@@ -199,6 +204,28 @@ describe("demo server security controls", () => {
       expect(response.status).toBe(400);
       await expect(response.json()).resolves.toEqual({
         error: "Unsupported field: command",
+      });
+    });
+
+    it("rate-limits repeated demo execution requests", async () => {
+      for (let requestNumber = 0; requestNumber < 10; requestNumber += 1) {
+        const response = await fetch(`${baseUrl}/api/demos/hello-world/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: "not-allowed" }),
+        });
+        expect(response.status).toBe(400);
+      }
+
+      const response = await fetch(`${baseUrl}/api/demos/hello-world/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: "not-allowed" }),
+      });
+
+      expect(response.status).toBe(429);
+      await expect(response.json()).resolves.toEqual({
+        error: "Too many demo runs; try again later",
       });
     });
   });

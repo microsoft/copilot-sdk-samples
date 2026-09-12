@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Application } from "express";
+import { rateLimit } from "express-rate-limit";
 import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -11,6 +12,14 @@ const app: Application = express();
 const PORT = Number(process.env.PORT ?? 3001);
 
 app.use(express.json());
+
+export const demoRunRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { error: "Too many demo runs; try again later" },
+});
 
 export interface DemoConfig {
   id: string;
@@ -367,6 +376,7 @@ app.get("/api/demos/:id", (req: Request<{ id: string }>, res: Response) => {
 
 app.post(
   "/api/demos/:id/run",
+  demoRunRateLimiter,
   requireSecureJsonRequest,
   (req: Request<{ id: string }, unknown, unknown>, res: Response) => {
     const demo = DEMO_CONFIGS[req.params.id];
